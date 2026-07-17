@@ -1,0 +1,31 @@
+SUBMITTAL TRANSMITTAL
+Project: Meridian Data Hall 1
+Submittal No.: 26 33 00-002
+Spec Section: 26 33 00 – Uninterruptible Power Supply (UPS) Systems
+Equipment Tag: UPS-02
+Vendor: Eaton
+Contractor: [General Contractor]
+Date: (synthetic)
+
+---
+EATON POWER XPERT 9395 HIGH PERFORMANCE UPS
+Datasheet ref: BR153048EN (Rev. Jan 2019)
+Configuration: 750 kW/750 kVA, redundant module (paired with UPS-01 to form N+1 system per Section 26 33 00.2)
+
+UPS RATING (unity power factor 1.0)
+kVA/kW: 750/750
+
+INPUT CHARACTERISTICS
+Voltage: 480V standard
+Input Breakers: 100 kAIC input breaker package (Eaton factory option, per spec Section 26 33 00.4) — CONFIRMED INCLUDED, quote line item EQ-88214-OPT100K attached.
+
+OUTPUT CHARACTERISTICS
+Voltage: 480V standard
+Regulation: ±1%
+
+BATTERY
+Battery Type: Lithium-ion
+Battery Voltage: 480V
+Runtime at 100% Rated Load: 12 minutes (per battery string sizing calculation BSC-2298, sized to current Section 26 33 00.3 requirement of 10-minute minimum autonomy, with 2-minute design margin)
+
+Efficiency: 97% double conversion mode at 480V (exceeds 96% minimum per Section 26 33 00.5)

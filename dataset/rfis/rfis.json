@@ -1,0 +1,222 @@
+[
+  {
+    "rfi_id": "RFI-HIST-001",
+    "source_project": "Ashburn Campus Building 4",
+    "date": "2024-03-11",
+    "subject": "UPS input breaker interrupting rating below spec",
+    "question": "Vendor's standard UPS input breaker package is rated 65kAIC. Spec 26 33 00 requires 100kAIC given the coordinated fault current study. Confirm whether the 65kAIC breaker is acceptable with a current-limiting fuse ahead of it, or whether the 100kAIC factory option must be ordered.",
+    "spec_section": "26 33 00",
+    "equipment_type": "UPS",
+    "resolution": "EOR rejected current-limiting fuse workaround due to selective coordination concerns with upstream switchgear relaying. Contractor ordered 100kAIC factory option; added 9 weeks to UPS fabrication lead time.",
+    "tags": ["SCCR", "breaker", "UPS", "interrupting rating", "coordination"]
+  },
+  {
+    "rfi_id": "RFI-HIST-002",
+    "source_project": "Loudoun Tech Park Phase 2",
+    "date": "2023-08-22",
+    "subject": "Battery runtime shortfall on submitted UPS",
+    "question": "Submitted VRLA battery string provides 7 minutes at full load; spec requires 10 minutes minimum autonomy to bridge to generator start. Vendor proposes reducing to two-step load transfer to compensate. Is this acceptable?",
+    "spec_section": "26 33 00",
+    "equipment_type": "UPS",
+    "resolution": "EOR rejected the two-step transfer workaround (adds complexity and a new failure mode). Contractor resubmitted with expanded battery cabinet meeting 10-minute requirement.",
+    "tags": ["battery", "runtime", "autonomy", "UPS", "generator start"]
+  },
+  {
+    "rfi_id": "RFI-HIST-003",
+    "source_project": "Ashburn Campus Building 4",
+    "date": "2024-01-15",
+    "subject": "Dry-type transformer impedance outside coordination study tolerance",
+    "question": "Manufacturer's standard 2500kVA cast-coil transformer has 7% impedance. Spec basis-of-design assumed 5.75% for the short-circuit and protective coordination study. Does the 7% value require a revised coordination study, or is it within acceptable tolerance?",
+    "spec_section": "26 12 00",
+    "equipment_type": "Transformer",
+    "resolution": "EOR confirmed 7% falls outside the +/-7.5% tolerance band on 5.75% nominal (5.32-6.18% acceptable). Required custom low-impedance wind; EOR re-ran arc-flash and coordination study at contractor's cost for the delay incurred.",
+    "tags": ["impedance", "transformer", "coordination", "arc flash", "tolerance"]
+  },
+  {
+    "rfi_id": "RFI-HIST-004",
+    "source_project": "Reno North DC1",
+    "date": "2023-11-02",
+    "subject": "Refrigerant substitution on precision cooling units",
+    "question": "Spec requires low-GWP R-454B refrigerant per sustainability addendum. Vendor's quoted lead time is 8 weeks shorter for standard R-410A units. Can Owner accept R-410A with a future retrofit commitment?",
+    "spec_section": "23 65 00",
+    "equipment_type": "Chiller/CRAC",
+    "resolution": "Owner rejected retrofit-later proposal citing state HFC phase-down compliance risk and warranty concerns on field refrigerant conversion. Contractor accepted 8-week lead time adder for factory R-454B units.",
+    "tags": ["refrigerant", "R-410A", "R-454B", "GWP", "sustainability", "chiller"]
+  },
+  {
+    "rfi_id": "RFI-HIST-005",
+    "source_project": "Loudoun Tech Park Phase 2",
+    "date": "2023-09-30",
+    "subject": "Medium voltage switchgear short-circuit withstand below fault study",
+    "question": "Standard 15kV switchgear frame offered by vendor has 25kA/3-sec withstand rating. Project fault current study shows 34.6kA available at the bus. Spec requires 40kA minimum. Can the 25kA frame be accepted with current-limiting reactors added upstream?",
+    "spec_section": "26 13 00",
+    "equipment_type": "Switchgear",
+    "resolution": "EOR rejected reactor workaround (adds voltage drop and a maintenance item not in original design intent). Contractor ordered upgraded 40kA frame; 6-week lead time adder absorbed within existing procurement float, no schedule impact to overall milestone.",
+    "tags": ["SCCR", "switchgear", "fault current", "withstand rating", "medium voltage"]
+  },
+  {
+    "rfi_id": "RFI-HIST-006",
+    "source_project": "Reno North DC1",
+    "date": "2023-06-14",
+    "subject": "Generator standby rating below spec minimum",
+    "question": "Vendor's standard frame for the requested engine model is rated 1200ekW standby. Spec requires 1250kW minimum. Is the 1200ekW unit acceptable given it is within 4% of spec?",
+    "spec_section": "26 32 00",
+    "equipment_type": "Generator",
+    "resolution": "EOR rejected on the basis that N+1 redundancy sizing was calculated against the 1250kW figure; a 4% shortfall across all units reduces the effective redundancy margin below the design basis. Contractor upsized to next frame.",
+    "tags": ["generator", "standby rating", "sizing", "redundancy", "N+1"]
+  },
+  {
+    "rfi_id": "RFI-HIST-007",
+    "source_project": "Ashburn Campus Building 4",
+    "date": "2024-02-08",
+    "subject": "Conflicting transfer switch timing requirements between spec sections",
+    "question": "Section 26 36 00 specifies 4-cycle max transfer time for critical ATS units. Section 26 05 00 paragraph 3.4.C references a 10-cycle allowance tied to NFPA 99 essential electrical systems, which appears to be inherited from a healthcare project template. Which governs for this data center project?",
+    "spec_section": "26 36 00 / 26 05 00",
+    "equipment_type": "ATS",
+    "resolution": "EOR confirmed 26 36 00 (4-cycle) governs; 26 05 00 3.4.C was a template carryover not applicable to this project type and was struck via addendum.",
+    "tags": ["ATS", "transfer time", "conflicting spec", "template error", "cross-reference"]
+  },
+  {
+    "rfi_id": "RFI-HIST-008",
+    "source_project": "Phoenix Gateway DC2",
+    "date": "2022-10-19",
+    "subject": "Concrete pour delay due to rebar submittal rejection",
+    "question": "Structural rebar submittal was rejected for non-conforming splice detailing. Can the Contractor proceed with the pour using field corrections pending resubmittal approval?",
+    "spec_section": "03 20 00",
+    "equipment_type": "Structural",
+    "resolution": "Rejected; full resubmittal and approval required prior to pour per QA/QC hold point.",
+    "tags": ["structural", "rebar", "concrete", "hold point"]
+  },
+  {
+    "rfi_id": "RFI-HIST-009",
+    "source_project": "Phoenix Gateway DC2",
+    "date": "2022-11-05",
+    "subject": "Fire suppression agent substitution",
+    "question": "Vendor proposes substituting clean agent FK-5-1-12 for the specified FM-200 due to supply chain constraints. Confirm acceptability.",
+    "spec_section": "21 22 00",
+    "equipment_type": "Fire Suppression",
+    "resolution": "Accepted with revised discharge calculations and updated room integrity test.",
+    "tags": ["fire suppression", "clean agent", "substitution"]
+  },
+  {
+    "rfi_id": "RFI-HIST-010",
+    "source_project": "Reno North DC1",
+    "date": "2023-07-01",
+    "subject": "BMS point list mismatch with CRAC controller",
+    "question": "Submitted CRAC unit's native BACnet point list omits three alarm points required by the BMS integration spec. How should this be resolved?",
+    "spec_section": "23 09 00",
+    "equipment_type": "Controls/BMS",
+    "resolution": "Vendor to provide gateway mapping to synthesize missing points from available raw sensor data; verified during Level 4 commissioning.",
+    "tags": ["BMS", "BACnet", "controls", "integration"]
+  },
+  {
+    "rfi_id": "RFI-HIST-011",
+    "source_project": "Ashburn Campus Building 4",
+    "date": "2024-04-02",
+    "subject": "Busway rating clarification for UPS output distribution",
+    "question": "Confirm busway ampacity requirement downstream of 750kW UPS modules operating at 480V.",
+    "spec_section": "26 25 00",
+    "equipment_type": "Busway",
+    "resolution": "Confirmed 1200A busway per calculated full-load current with 25% NEC continuous-load margin.",
+    "tags": ["busway", "ampacity", "UPS distribution"]
+  },
+  {
+    "rfi_id": "RFI-HIST-012",
+    "source_project": "Loudoun Tech Park Phase 2",
+    "date": "2023-10-11",
+    "subject": "Cable tray fill exceeding NEC allowance in shared electrical corridor",
+    "question": "As-built cable tray routing shows fill exceeding 40% in the shared MV/LV corridor. Remediation options?",
+    "spec_section": "26 05 36",
+    "equipment_type": "Cable Tray",
+    "resolution": "Added parallel tray run; re-routed non-critical low-voltage control cabling.",
+    "tags": ["cable tray", "NEC", "fill ratio"]
+  },
+  {
+    "rfi_id": "RFI-HIST-013",
+    "source_project": "Phoenix Gateway DC2",
+    "date": "2022-12-20",
+    "subject": "Generator paralleling switchgear relay coordination with utility protection",
+    "question": "Utility requires reverse power protection setting that conflicts with generator manufacturer's default relay curve during black-start testing. Recommend resolution path.",
+    "spec_section": "26 32 00 / 26 13 00",
+    "equipment_type": "Generator/Switchgear",
+    "resolution": "Custom relay curve developed jointly with utility and generator OEM; verified during Level 5 IST black-start simulation.",
+    "tags": ["relay coordination", "utility interconnection", "generator", "black start", "IST"]
+  },
+  {
+    "rfi_id": "RFI-HIST-014",
+    "source_project": "Reno North DC1",
+    "date": "2023-05-19",
+    "subject": "Chilled water pipe insulation thickness below spec in mechanical yard",
+    "question": "Field-installed insulation on chilled water supply/return piping measures 1 inch; spec requires 1.5 inch minimum for the climate zone. Remediation?",
+    "spec_section": "23 07 00",
+    "equipment_type": "Piping/Insulation",
+    "resolution": "Contractor added supplemental insulation wrap to meet 1.5in minimum; verified by thermal imaging survey.",
+    "tags": ["insulation", "piping", "mechanical", "climate zone"]
+  },
+  {
+    "rfi_id": "RFI-HIST-015",
+    "source_project": "Ashburn Campus Building 4",
+    "date": "2024-05-14",
+    "subject": "Raised floor grounding grid resistance test failure",
+    "question": "Ground resistance test at raised floor pedestal grid measured 8 ohms; spec requires 5 ohms maximum. Options for remediation without full regrounding?",
+    "spec_section": "26 05 26",
+    "equipment_type": "Grounding",
+    "resolution": "Added supplemental ground rods at high-resistance zones; retest confirmed 4.2 ohms.",
+    "tags": ["grounding", "resistance test", "raised floor"]
+  },
+  {
+    "rfi_id": "RFI-HIST-016",
+    "source_project": "Loudoun Tech Park Phase 2",
+    "date": "2023-12-01",
+    "subject": "Arc flash label discrepancy after transformer impedance change",
+    "question": "Following the transformer impedance resubmittal (RFI-HIST-003 on prior project, similar condition here), do arc flash labels need to be reissued before energization?",
+    "spec_section": "26 05 00 / NFPA 70E",
+    "equipment_type": "Arc Flash / Safety",
+    "resolution": "Yes -- arc flash study and labels reissued to reflect as-built impedance prior to any energized work.",
+    "tags": ["arc flash", "transformer", "impedance", "safety", "NFPA 70E"]
+  },
+  {
+    "rfi_id": "RFI-HIST-017",
+    "source_project": "Phoenix Gateway DC2",
+    "date": "2023-01-09",
+    "subject": "CRAC unit sound level exceeding equipment yard limit",
+    "question": "Submitted CRAC unit sound data shows 82 dB(A) at 10m; local ordinance and spec cap at 78 dB(A). Acceptable mitigations?",
+    "spec_section": "23 65 00",
+    "equipment_type": "Chiller/CRAC",
+    "resolution": "Vendor added acoustic louver package reducing measured level to 76 dB(A); verified during SAT.",
+    "tags": ["sound level", "CRAC", "acoustic", "ordinance"]
+  },
+  {
+    "rfi_id": "RFI-HIST-018",
+    "source_project": "Reno North DC1",
+    "date": "2023-04-27",
+    "subject": "Long-lead switchgear delivery delay notification",
+    "question": "Vendor notifies 6-week delay on MV switchgear delivery due to component shortage. Does this affect the critical path given current float?",
+    "spec_section": "26 13 00",
+    "equipment_type": "Switchgear",
+    "resolution": "Schedule analysis showed 11 weeks of float remaining on the switchgear chain at time of notice; 6-week delay absorbed with 5 weeks float remaining, no milestone impact. Documented for record only.",
+    "tags": ["schedule", "delay", "switchgear", "float", "long lead"]
+  },
+  {
+    "rfi_id": "RFI-HIST-019",
+    "source_project": "Ashburn Campus Building 4",
+    "date": "2024-06-03",
+    "subject": "Lithium-ion battery UL 9540A test report request",
+    "question": "Submitted UPS battery cabinets use lithium-ion chemistry per Section 26 33 00.3 Contractor's option. AHJ is requesting UL 9540A large-scale fire test report prior to permit sign-off. Vendor has not provided this. How to proceed?",
+    "spec_section": "26 33 00 / Fire/Life Safety",
+    "equipment_type": "UPS/Battery",
+    "resolution": "Vendor provided UL 9540A test report for the specific cabinet configuration; AHJ approved with required separation distances per report.",
+    "tags": ["lithium-ion", "UL 9540A", "battery", "AHJ", "fire safety"]
+  },
+  {
+    "rfi_id": "RFI-HIST-020",
+    "source_project": "Loudoun Tech Park Phase 2",
+    "date": "2024-01-30",
+    "subject": "Integrated systems test failure -- generator-to-UPS transfer sequencing",
+    "question": "During Level 5 IST, simulated utility loss showed UPS depleting to 2 minutes remaining before generator breaker closed, versus the expected 30-second transfer window. Root cause?",
+    "spec_section": "26 32 00 / 26 33 00",
+    "equipment_type": "Generator/UPS Integration",
+    "resolution": "Root cause: generator start-signal relay logic had an unintended 90-second debounce timer left at commissioning-vendor default. Corrected in EMCP4 controller; IST re-run and passed. Cited as a textbook commissioning-stage integration failure similar to industry-documented breaker-coordination incidents.",
+    "tags": ["IST", "commissioning failure", "generator start", "UPS", "sequencing", "integration"]
+  }
+]

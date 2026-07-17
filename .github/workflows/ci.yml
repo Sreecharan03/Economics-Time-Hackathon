@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # This job is real today -- it runs the independent CPM validator against
+  # the checked-in schedule.csv on every push, so the dataset can never drift
+  # out of sync with its own CPM math again without CI catching it.
+  validate-dataset:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate schedule CPM math
+        working-directory: dataset/schedule
+        run: python3 validate_cpm.py
+      - name: Validate dataset referential integrity
+        run: python3 evals/check_dataset_integrity.py
+
+  # One job per service, matrixed. Each step is guarded so a service without
+  # code yet (no requirements.txt) is skipped rather than failing the build --
+  # remove the guard once that service has a real implementation + tests.
+  test-services:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - gateway
+          - extraction-service
+          - compliance-service
+          - schedule-service
+          - retrieval-service
+          - drafting-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check for implementation
+        id: check
+        run: |
+          if [ -f "services/${{ matrix.service }}/requirements.txt" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Install dependencies
+        if: steps.check.outputs.exists == 'true'
+        run: pip install -r services/${{ matrix.service }}/requirements.txt
+      - name: Run tests
+        if: steps.check.outputs.exists == 'true'
+        run: pytest services/${{ matrix.service }}/tests -v
+      - name: No-op (service not yet implemented)
+        if: steps.check.outputs.exists == 'false'
+        run: echo "services/${{ matrix.service }} has no requirements.txt yet -- skipping, not failing"

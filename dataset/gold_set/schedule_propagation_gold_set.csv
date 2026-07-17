@@ -1,0 +1,15 @@
+scenario,triggering_equipment,triggering_activity,resubmit_delay_days,activity_id,baseline_early_finish,baseline_total_float,new_early_finish,new_total_float,slips,notes
+baseline,,,0,CX-L5-IST,745,0,745,0,FALSE,No deviation applied; reference baseline
+scenario_A_transformer,XFMR-01,SUBM-XFMR-01,14,SUBM-XFMR-01,84,0,98,0,TRUE,Resubmit cycle applied directly
+scenario_A_transformer,XFMR-01,SUBM-XFMR-01,14,FAB-XFMR-01,686,0,700,0,TRUE,Shifted 1:1 (critical path)
+scenario_A_transformer,XFMR-01,SUBM-XFMR-01,14,INST-XFMR-01,700,0,714,0,TRUE,Shifted 1:1 (critical path)
+scenario_A_transformer,XFMR-01,SUBM-XFMR-01,14,CX-L2-SAT,710,0,724,0,TRUE,Shifted 1:1 (critical path)
+scenario_A_transformer,XFMR-01,SUBM-XFMR-01,14,CX-L3-PREFUNC,720,0,734,0,TRUE,Shifted 1:1 (critical path)
+scenario_A_transformer,XFMR-01,SUBM-XFMR-01,14,CX-L4-FPT,735,0,749,0,TRUE,Shifted 1:1 (critical path)
+scenario_A_transformer,XFMR-01,SUBM-XFMR-01,14,CX-L5-IST,745,0,759,0,TRUE,"CRITICAL: IST milestone slips 14 days -- expected headline demo result"
+scenario_A_transformer,XFMR-01,SUBM-XFMR-01,14,CX-L6-HANDOVER,755,0,769,0,TRUE,Shifted 1:1 (critical path)
+scenario_B_switchgear,SWGR-MV-01,SUBM-SWGR-01,14,SUBM-SWGR-01,84,263,98,249,FALSE,Resubmit cycle applied; float consumed not exceeded
+scenario_B_switchgear,SWGR-MV-01,SUBM-SWGR-01,14,FAB-SWGR-01,406,263,420,249,FALSE,Float consumed 14 of 263 days
+scenario_B_switchgear,SWGR-MV-01,SUBM-SWGR-01,14,INST-SWGR-01,427,263,441,249,FALSE,Float consumed; still non-critical
+scenario_B_switchgear,SWGR-MV-01,SUBM-SWGR-01,14,CX-L2-SAT,710,0,710,0,FALSE,"No change -- SAT is gated by transformer chain (critical), not switchgear"
+scenario_B_switchgear,SWGR-MV-01,SUBM-SWGR-01,14,CX-L5-IST,745,0,745,0,FALSE,"FLAGGED not CRITICAL: IST does not slip; 249 days float remains on switchgear chain -- expected result demonstrating tool does not over-alarm"

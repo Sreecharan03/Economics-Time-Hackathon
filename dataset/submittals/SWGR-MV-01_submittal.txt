@@ -1,0 +1,39 @@
+SUBMITTAL TRANSMITTAL
+Project: Meridian Data Hall 1
+Submittal No.: 26 13 00-001
+Spec Section: 26 13 00 – Medium Voltage Switchgear
+Equipment Tag: SWGR-MV-01
+Vendor: Vertiv
+Contractor: [General Contractor]
+Date: (synthetic)
+
+---
+VERTIV POWERBOARD MEDIUM VOLTAGE SWITCHGEAR
+Type: Metal-Clad, Indoor, Fixed-Mount Vacuum Circuit Breaker
+Product Line: PowerBoard MV, IEC 62271-200 / IEEE C37.20.2
+
+ELECTRICAL DATA
+Rated Voltage: 15 kV class
+Rated Continuous Current (Main Bus): 1200 A
+Rated Frequency: 60 Hz
+Number of Breaker Cells: 6 (2 incoming, 2 tie, 2 feeder)
+Breaker Type: Vacuum, stored-energy spring operated
+
+SHORT-CIRCUIT RATINGS
+Rated Short-Time Withstand Current: 25 kA, 3 sec
+Rated Peak Withstand (Close & Latch): 65 kA peak
+(Note: this is Vertiv's standard PowerBoard MV offering for the 15kV/1200A frame at this list configuration; the 40 kA / 3-sec withstand class requires the next frame size up and is available as a non-standard configuration — see Vertiv Options Bulletin VOB-114 for upgrade pricing and 6-week lead time adder.)
+
+Basic Insulation Level (BIL): 95 kV
+Enclosure: NEMA 1, indoor, freestanding
+
+CONTROLS
+Protective Relaying: Microprocessor-based, ANSI 50/51/27/59/81 functions standard
+Communications: Modbus TCP, DNP3 optional
+
+STANDARDS
+IEEE C37.20.2 (Metal-Clad Switchgear)
+IEEE C37.06 (Preferred Ratings)
+UL 1558 (Metal-Enclosed Low-Voltage Switchgear — reference only, MV unit tested to IEEE)
+
+Factory witness test scheduled per project milestone schedule; short-circuit withstand demonstrated by design test report (Vertiv Test Report TR-4471, on file, applicable to this frame/rating combination).

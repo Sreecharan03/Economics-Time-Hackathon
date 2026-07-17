@@ -1,0 +1,43 @@
+SUBMITTAL TRANSMITTAL
+Project: Meridian Data Hall 1
+Submittal No.: 26 33 00-001
+Spec Section: 26 33 00 – Uninterruptible Power Supply (UPS) Systems
+Equipment Tag: UPS-01
+Vendor: Eaton
+Contractor: [General Contractor]
+Date: (synthetic)
+
+---
+EATON POWER XPERT 9395 HIGH PERFORMANCE UPS
+Datasheet ref: BR153048EN (Rev. Jan 2019)
+Configuration: 750 kW/750 kVA, single module (N, not N+1 — see note)
+
+UPS RATING (unity power factor 1.0)
+kVA/kW: 750/750
+
+GENERAL CHARACTERISTICS
+Efficiency: 99% in Energy Saver System (ESS); up to 97% (480V) double-conversion
+Parallel Capability: 4 UPS units max distributed bypass / 8 units max with SBM
+Max Modules per Frame Size: Up to 3 modules, 600 kW frame (this unit ordered as single 750kW frame — see note below on N+1)
+System Bypass Module: Included
+Field Upgradeable: Yes
+
+INPUT CHARACTERISTICS
+Voltage: 480V standard
+Voltage Range: +10%/-15%
+Frequency Range: 45-65 Hz
+Power Factor: 0.99 minimum
+Internal Backfeed Protection: Yes
+Input Breakers: Standard 65 kAIC input breaker package (Eaton standard offering; 100 kAIC input breaker package is a factory option — line item priced separately, +approx. 9 weeks fabrication lead time per Eaton quote EQ-88213)
+
+OUTPUT CHARACTERISTICS
+Voltage: 480V standard
+Regulation: ±1%
+Overload: 110% for 10 min, 125% for 2 min, 150% for 15 sec
+
+BATTERY
+Battery Type: VRLA
+Battery Voltage: 480V
+Runtime at 100% Rated Load: 7 minutes (per battery string sizing calculation BSC-2291, sized to Owner's original 7-minute generator-start assumption noted in early basis-of-design correspondence — Contractor to confirm current spec requirement)
+
+VENDOR NOTE: Submittal reflects one (1) UPM module at 750kW. Spec Section 26 33 00.2 calls for N+1 modular architecture (minimum 2 modules). Second module (UPS-02) submitted separately under Submittal 26 33 00-002.

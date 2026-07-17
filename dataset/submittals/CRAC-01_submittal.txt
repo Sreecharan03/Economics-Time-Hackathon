@@ -1,0 +1,28 @@
+SUBMITTAL TRANSMITTAL
+Project: Meridian Data Hall 1
+Submittal No.: 23 65 00-001
+Spec Section: 23 65 00 – Cooling Towers / Air-Cooled Chillers
+Equipment Tag: CRAC-01
+Vendor: Vertiv
+Contractor: [General Contractor]
+Date: (synthetic)
+
+---
+VERTIV LIEBERT HPC-S AIR-COOLED FREE-COOLING CHILLER
+Product Line: HPC-S, Scroll Compressor, Free-Cooling Coil
+
+UNIT DATA
+Cooling Capacity: 360 kW total (at ARI standard rating conditions) — meets 350kW minimum per Section 23 65 00.3
+Compressor Type: Scroll, 2 circuits
+Refrigerant: R-410A (standard product line refrigerant for this HPC-S configuration as of vendor's current price book; low-GWP R-454B/R-1234ze variant available as HPC-S "LowGWP" option — see attached Vertiv brochure page 3, footnote 2 — with approx. 4-week lead time adder and 6% cost premium)
+Free-Cooling: Integrated air-to-refrigerant free-cooling coil, enabled below 40°F ambient
+
+ELECTRICAL
+Voltage: 480V, 3-phase, 60 Hz
+FLA: 210A
+
+CONSTRUCTION
+Enclosure: Outdoor, galvanized steel, powder-coated
+Sound Level: 78 dB(A) at 10m
+
+Vendor Note: R-410A remains Vertiv's standard HPC-S offering in most North American markets; low-GWP variants are increasingly specified for projects subject to state HFC phase-down rules (e.g., California, New York, Washington) but carry a lead-time and cost premium noted above.

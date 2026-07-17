@@ -1,0 +1,87 @@
+# Local dev stack. `postgres` is real and runnable today. The six service
+# blocks below are commented out until each has actual application code and
+# a Dockerfile -- listed here so the intended full topology is documented in
+# one place, not scattered across service READMEs, but nothing here should
+# claim to work before it does.
+#
+# Bring up just the database:
+#   docker compose -f infra/docker-compose.yml up -d postgres
+#
+# Uncomment a service block once services/<name>/ has a working Dockerfile.
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: meridian-postgres
+    environment:
+      POSTGRES_USER: meridian
+      POSTGRES_PASSWORD: meridian_dev_only
+      POSTGRES_DB: meridian
+    ports:
+      - "5432:5432"
+    volumes:
+      - meridian_pg_data:/var/lib/postgresql/data
+      - ./db/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U meridian -d meridian"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # gateway:
+  #   build: ../services/gateway
+  #   ports: ["8000:8000"]
+  #   environment:
+  #     - DATABASE_URL=postgresql://meridian:meridian_dev_only@postgres:5432/meridian
+  #     - EXTRACTION_SERVICE_URL=http://extraction-service:8001
+  #     - COMPLIANCE_SERVICE_URL=http://compliance-service:8002
+  #     - SCHEDULE_SERVICE_URL=http://schedule-service:8003
+  #     - RETRIEVAL_SERVICE_URL=http://retrieval-service:8004
+  #     - DRAFTING_SERVICE_URL=http://drafting-service:8005
+  #   depends_on: [postgres, extraction-service, compliance-service, schedule-service, retrieval-service, drafting-service]
+  #
+  # extraction-service:
+  #   build: ../services/extraction-service
+  #   ports: ["8001:8001"]
+  #   environment:
+  #     - DATABASE_URL=postgresql://meridian:meridian_dev_only@postgres:5432/meridian
+  #     - GROQ_API_KEY=${GROQ_API_KEY}
+  #   depends_on: [postgres]
+  #
+  # compliance-service:
+  #   build: ../services/compliance-service
+  #   ports: ["8002:8002"]
+  #   environment:
+  #     - DATABASE_URL=postgresql://meridian:meridian_dev_only@postgres:5432/meridian
+  #   depends_on: [postgres]
+  #
+  # schedule-service:
+  #   build: ../services/schedule-service
+  #   ports: ["8003:8003"]
+  #   environment:
+  #     - DATABASE_URL=postgresql://meridian:meridian_dev_only@postgres:5432/meridian
+  #   depends_on: [postgres]
+  #
+  # retrieval-service:
+  #   build: ../services/retrieval-service
+  #   ports: ["8004:8004"]
+  #   environment:
+  #     - DATABASE_URL=postgresql://meridian:meridian_dev_only@postgres:5432/meridian
+  #   depends_on: [postgres]
+  #
+  # drafting-service:
+  #   build: ../services/drafting-service
+  #   ports: ["8005:8005"]
+  #   environment:
+  #     - GROQ_API_KEY=${GROQ_API_KEY}
+  #   depends_on: [postgres]
+  #
+  # frontend:
+  #   build: ../frontend
+  #   ports: ["3000:3000"]
+  #   environment:
+  #     - NEXT_PUBLIC_GATEWAY_URL=http://localhost:8000
+  #   depends_on: [gateway]
+
+volumes:
+  meridian_pg_data:

@@ -1,0 +1,26 @@
+activity_id,activity_name,activity_type,duration_days,predecessors,early_start,early_finish,late_start,late_finish,total_float_days,equipment_id,package_id,commissioning_test_id
+M-NTP,Notice to Proceed,milestone,0,,0,0,0,0,0,,,
+ENG-010,Design Development - Electrical,design,56,M-NTP:FS,0,56,0,56,0,,,
+ENG-020,Design Development - Mechanical,design,56,M-NTP:FS,0,56,460,516,460,,,
+SUBM-XFMR-01,Submittal Prep & Review - Transformer,submittal,28,ENG-010:FS,56,84,56,84,0,XFMR-01,PKG-XFMR,
+FAB-XFMR-01,Fabrication & Delivery - Transformer,procurement,602,SUBM-XFMR-01:FS,84,686,84,686,0,XFMR-01,PKG-XFMR,
+SUBM-SWGR-01,Submittal Prep & Review - MV Switchgear,submittal,28,ENG-010:FS,56,84,319,347,263,SWGR-MV-01,PKG-SWGR-MV,
+FAB-SWGR-01,Fabrication & Delivery - MV Switchgear,procurement,322,SUBM-SWGR-01:FS,84,406,347,669,263,SWGR-MV-01,PKG-SWGR-MV,
+SUBM-UPS-01,Submittal Prep & Review - UPS,submittal,28,ENG-010:FS,56,84,508,536,452,UPS-01,PKG-UPS,
+FAB-UPS-01,Fabrication & Delivery - UPS,procurement,154,SUBM-UPS-01:FS,84,238,536,690,452,UPS-01,PKG-UPS,
+SUBM-GEN-01,Submittal Prep & Review - Generator,submittal,28,ENG-010:FS,56,84,422,450,366,GEN-01,PKG-GEN,
+FAB-GEN-01,Fabrication & Delivery - Generator,procurement,238,SUBM-GEN-01:FS,84,322,450,688,366,GEN-01,PKG-GEN,
+SUBM-CRAC-01,Submittal Prep & Review - CRAC/Chiller,submittal,28,ENG-020:FS,56,84,536,564,480,CRAC-01,PKG-CHILLER,
+FAB-CRAC-01,Fabrication & Delivery - CRAC,procurement,126,SUBM-CRAC-01:FS,84,210,564,690,480,CRAC-01,PKG-CHILLER,
+CONST-ELEC-01,Electrical Room Rough-in & Ready,construction,160,ENG-010:FS+34,90,250,509,669,419,,,
+CONST-MECH-01,Mechanical Yard/CRAC Pad Ready,construction,140,ENG-020:FS+34,90,230,550,690,460,,,
+INST-XFMR-01,Transformer Install & Terminate,install,14,"FAB-XFMR-01:FS,CONST-ELEC-01:FS",686,700,686,700,0,XFMR-01,PKG-XFMR,
+INST-SWGR-01,MV Switchgear Install,install,21,"FAB-SWGR-01:FS,CONST-ELEC-01:FS",406,427,669,690,263,SWGR-MV-01,PKG-SWGR-MV,
+INST-UPS-01,UPS Install (both modules),install,10,"FAB-UPS-01:FS,INST-SWGR-01:FS",427,437,690,700,263,"UPS-01,UPS-02",PKG-UPS,
+INST-GEN-01,Generator Install (both units),install,12,"FAB-GEN-01:FS,CONST-ELEC-01:FS",322,334,688,700,366,"GEN-01,GEN-02",PKG-GEN,
+INST-CRAC-01,CRAC/Chiller Install,install,10,"FAB-CRAC-01:FS,CONST-MECH-01:FS",230,240,690,700,460,"CRAC-01,CRAC-02",PKG-CHILLER,
+CX-L2-SAT,Site Acceptance Testing (Level 2/SAT),commissioning,10,"INST-XFMR-01:FS,INST-SWGR-01:FS,INST-UPS-01:FS,INST-GEN-01:FS,INST-CRAC-01:FS",700,710,700,710,0,,,CX-TEST-SAT
+CX-L3-PREFUNC,Pre-Functional Checks (Level 3),commissioning,10,CX-L2-SAT:FS,710,720,710,720,0,,,CX-TEST-PREFUNC
+CX-L4-FPT,Functional Performance Testing / Blue Tag (Level 4),commissioning,15,CX-L3-PREFUNC:FS,720,735,720,735,0,,,CX-TEST-FPT
+CX-L5-IST,Integrated Systems Test / White Tag (Level 5),milestone,10,CX-L4-FPT:FS,735,745,735,745,0,,,CX-TEST-IST
+CX-L6-HANDOVER,Handover / Closeout (Level 6),milestone,10,CX-L5-IST:FS,745,755,745,755,0,,,CX-TEST-HANDOVER
