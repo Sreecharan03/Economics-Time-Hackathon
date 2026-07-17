@@ -1,11 +1,12 @@
-# Local dev stack. `postgres` is real and runnable today. The six service
-# blocks below are commented out until each has actual application code and
-# a Dockerfile -- listed here so the intended full topology is documented in
-# one place, not scattered across service READMEs, but nothing here should
-# claim to work before it does.
+# Local dev stack. `postgres` and `compliance-service` are real and runnable
+# today (compliance-service verified: built, run as a container, hit over
+# real HTTP for both the FAIL and CONFLICT cases). The remaining five service
+# blocks are commented out until each has actual application code and a
+# Dockerfile -- listed here so the intended full topology is documented in
+# one place, but nothing here should claim to work before it does.
 #
-# Bring up just the database:
-#   docker compose -f infra/docker-compose.yml up -d postgres
+# Bring up the database + compliance-service:
+#   docker compose -f infra/docker-compose.yml up -d postgres compliance-service
 #
 # Uncomment a service block once services/<name>/ has a working Dockerfile.
 
@@ -48,12 +49,18 @@ services:
   #     - GROQ_API_KEY=${GROQ_API_KEY}
   #   depends_on: [postgres]
   #
-  # compliance-service:
-  #   build: ../services/compliance-service
-  #   ports: ["8002:8002"]
-  #   environment:
-  #     - DATABASE_URL=postgresql://meridian:meridian_dev_only@postgres:5432/meridian
-  #   depends_on: [postgres]
+  compliance-service:
+    build:
+      context: ..
+      dockerfile: services/compliance-service/Dockerfile
+    ports: ["8002:8002"]
+    # No DATABASE_URL / depends_on postgres yet -- this service currently
+    # reads its spec-requirement seed data straight from
+    # dataset/submittals/equipment_master.json (baked into the image at
+    # EQUIPMENT_MASTER_PATH, set in the Dockerfile), not from Postgres. That
+    # DB-backed path is planned (see services/compliance-service/README.md
+    # and infra/db/migrations/001_initial_schema.sql's spec_requirement
+    # table) but not implemented -- don't claim a dependency that isn't real.
   #
   # schedule-service:
   #   build: ../services/schedule-service

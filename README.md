@@ -107,7 +107,7 @@ that service's code.
 
 ## Progress
 
-**Overall: `[███░░░░░░░░░░░░░░░░░]` 15%**
+**Overall: `[█████░░░░░░░░░░░░░░░]` ~26%**
 
 Weighted by remaining effort, not file count — Phase 0 was real work (dataset
 + validation + architecture) but implementation/testing across 6 services,
@@ -116,7 +116,7 @@ the frontend, and integration is the bulk of what's left.
 | Component | Weight | Status | Progress |
 |---|---|---|---|
 | Phase 0 — design, dataset, scaffold | 15% | ✅ Complete | `[████████████████████]` 100% |
-| `compliance-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
+| `compliance-service` | 12% | ✅ Engine + API + tests + Docker, verified end-to-end | `[██████████████████░░]` 90% |
 | `schedule-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
 | `extraction-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
 | `retrieval-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
@@ -128,6 +128,37 @@ the frontend, and integration is the bulk of what's left.
 **What "done" means for a service** (see [Push/test policy](#pushtest-policy)
 below): not just code that runs, but a green pytest suite with deep edge-case
 coverage. A service only moves out of "no code" once that bar is cleared.
+
+### `compliance-service` (2026-07-17)
+
+First service implemented. `engine.py` is pure Python (no LLM, no DB, no
+network) implementing two check types -- RANGE (numeric, covers both
+tolerance-band and minimum-only checks with one code path) and ENUM (exact
+string match) -- plus CONFLICT handling for spec-internal contradictions.
+`spec_data.py` seeds requirements from `dataset/submittals/equipment_master.json`
+rather than a second hand-typed copy. `main.py` is a thin FastAPI wrapper with
+no comparison logic of its own.
+
+Test suite: 69 pytest nodes (48 in `test_engine.py`, 21 in `test_api.py`) all
+passing, covering all 21 gold-set rows, the full 12-item demo set end-to-end
+through the real API, explicit edge cases (bool-as-numeric rejection,
+NaN/Inf, unit mismatches, case sensitivity), plus 8 Hypothesis property tests
+independently verified to execute **1,892 generated example evaluations**
+(counted empirically, not asserted) checked against independently-written
+reference formulas, not the implementation restating its own logic.
+
+Verified beyond pytest: built as a real Docker image, run as a real
+container, hit over real HTTP for both the FAIL (XFMR-01) and CONFLICT
+(ATS-01) cases, and brought up through `docker compose up` itself (not just
+manual `docker build`/`run`) before being torn down. One real bug caught in
+that process: an `os.environ.get(key, default)` call evaluated its fallback
+path eagerly regardless of whether the env var was set, crashing the
+container on startup — a bug pytest alone never would have caught, since the
+local dev path happened to resolve fine.
+
+Not yet done: Postgres-backed spec-requirement loading (currently the
+JSON-file seed, an intentional interim stand-in documented in
+`spec_data.py`) and `DATABASE_URL` wiring in `docker-compose.yml`.
 
 ### Push/test policy
 
