@@ -107,7 +107,7 @@ that service's code.
 
 ## Progress
 
-**Overall: `[█████░░░░░░░░░░░░░░░]` ~26%**
+**Overall: `[███████░░░░░░░░░░░░░]` ~37%**
 
 Weighted by remaining effort, not file count — Phase 0 was real work (dataset
 + validation + architecture) but implementation/testing across 6 services,
@@ -117,7 +117,7 @@ the frontend, and integration is the bulk of what's left.
 |---|---|---|---|
 | Phase 0 — design, dataset, scaffold | 15% | ✅ Complete | `[████████████████████]` 100% |
 | `compliance-service` | 12% | ✅ Engine + API + tests + Docker, verified end-to-end | `[██████████████████░░]` 90% |
-| `schedule-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
+| `schedule-service` | 12% | ✅ Engine + API + tests + Docker, verified end-to-end | `[██████████████████░░]` 90% |
 | `extraction-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
 | `retrieval-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
 | `drafting-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
@@ -159,6 +159,40 @@ local dev path happened to resolve fine.
 Not yet done: Postgres-backed spec-requirement loading (currently the
 JSON-file seed, an intentional interim stand-in documented in
 `spec_data.py`) and `DATABASE_URL` wiring in `docker-compose.yml`.
+
+### `schedule-service` (2026-07-17)
+
+Second service implemented. `engine.py` is the same algorithm independently
+verified by `dataset/schedule/validate_cpm.py` and `validate_propagation.py`
+during the gold-set audit -- wrapped for API use, not reimplemented, so the
+switchgear-float class of bug found there has exactly one place to hide, not
+two. Full forward + backward pass over the *entire* network on every call,
+never just the triggering activity's own chain -- that shortcut is precisely
+what produced the original 263-vs-273 float error.
+
+Test suite: 65 pytest nodes (52 in `test_engine.py`, 13 in `test_api.py`),
+covering the full baseline network against every recorded column in
+`schedule.csv`, both seeded gold-set propagation scenarios, explicit edge
+cases (cycle detection, dangling predecessors, negative delays, unknown
+milestones), plus 4 Hypothesis property tests independently verified to
+execute **799 generated example evaluations** against synthetic
+linear-chain and parallel-chain (diamond) networks — including a property
+proving the exact formula behind the switchgear result generalizes
+(shorter-chain float equals the chain-length difference; a delay is only
+absorbed up to that float, then slips 1:1 beyond it).
+
+Verified beyond pytest: built as a real Docker image, run as a container,
+hit over real HTTP for both scenarios, then brought up alongside
+`compliance-service` simultaneously via a single `docker compose up`. One
+side effect worth noting, not a bug: delaying the critical-path transformer
+by 14 days also *increases* the float on unrelated non-critical chains (e.g.
+`ENG-020`'s float grew from 460 to 474) even though their own dates don't
+move — correct CPM behavior once the deadline they're measured against
+shifts, and only visible because the engine recomputes the whole network
+rather than just the triggered chain.
+
+Not yet done: Postgres-backed schedule loading (currently the CSV seed,
+same interim-stand-in pattern as `compliance-service`).
 
 ### Push/test policy
 
