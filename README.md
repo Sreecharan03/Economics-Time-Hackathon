@@ -105,10 +105,38 @@ Each service directory has its own `README.md` documenting its single
 responsibility and exact request/response contract — read those before touching
 that service's code.
 
-## Status
+## Progress
 
-Design phase (Phase 0) complete. Dataset built and independently validated
-(see `dataset/schedule/validate_cpm.py` — an independent CPM recomputation that
-caught and let us fix a real 10-day error in the hand-built schedule before any
-service code depended on it). Service scaffolding in progress. No business logic
-implemented yet — see each service's README for its planned contract.
+**Overall: `[███░░░░░░░░░░░░░░░░░]` 15%**
+
+Weighted by remaining effort, not file count — Phase 0 was real work (dataset
++ validation + architecture) but implementation/testing across 6 services,
+the frontend, and integration is the bulk of what's left.
+
+| Component | Weight | Status | Progress |
+|---|---|---|---|
+| Phase 0 — design, dataset, scaffold | 15% | ✅ Complete | `[████████████████████]` 100% |
+| `compliance-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
+| `schedule-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
+| `extraction-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
+| `retrieval-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
+| `drafting-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
+| `gateway` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
+| `frontend` | 8% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
+| Integration + demo polish | 5% | ⬜ Not started | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
+
+**What "done" means for a service** (see [Push/test policy](#pushtest-policy)
+below): not just code that runs, but a green pytest suite with deep edge-case
+coverage. A service only moves out of "no code" once that bar is cleared.
+
+### Push/test policy
+
+Code changes to any `services/*/app/` push to GitHub only after that
+service's `tests/` suite (target: ~1000+ distinct parametrized edge cases —
+boundary values, malformed/missing input, unit mismatches, not just the
+golden-path gold-set rows) is written and passing. This is a per-service bar,
+not a whole-project one. Docs-only changes (this README, service READMEs)
+are exempt and push freely. Local commits are never gated — only `git push`.
+
+This table is updated every push, reflecting real state, not aspiration.
+Last updated: 2026-07-17 (Phase 0 commit `b74cc57`, not yet pushed).
