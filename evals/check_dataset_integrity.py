@@ -27,30 +27,54 @@ def main():
     equip_ids = {e["equipment_id"] for e in equip}
 
     with open(DATASET / "gold_set" / "compliance_gold_set.csv") as f:
-        gold_rows = list(csv.DictReader(f))
-    gold_ids = {r["equipment_id"] for r in gold_rows}
+        all_gold_rows = list(csv.DictReader(f))
 
+    # boundary_test rows are synthetic numeric test vectors, not real project
+    # equipment -- they intentionally don't exist in equipment_master.json.
+    gold_rows = [r for r in all_gold_rows if r["row_type"] == "equipment"]
+    boundary_rows = [r for r in all_gold_rows if r["row_type"] == "boundary_test"]
+    unknown_row_types = {r["row_type"] for r in all_gold_rows} - {"equipment", "boundary_test"}
+    if unknown_row_types:
+        ok = fail(f"compliance_gold_set.csv has unrecognized row_type values: {unknown_row_types}")
+
+    gold_ids = {r["equipment_id"] for r in gold_rows}
     if equip_ids - gold_ids:
         ok = fail(f"equipment in master but missing from compliance gold set: {equip_ids - gold_ids}")
     if gold_ids - equip_ids:
         ok = fail(f"equipment in compliance gold set but not in master: {gold_ids - equip_ids}")
 
+    # every equipment item now uses the SAME attributes[] shape -- no more
+    # special-casing single- vs multi-attribute items.
     for r in gold_rows:
         eid = r["equipment_id"]
         e = next(x for x in equip if x["equipment_id"] == eid)
-        if "attributes" in e:
-            att = next((a for a in e["attributes"] if a["attribute"] == r["attribute"]), None)
-            if att is None:
-                ok = fail(f"{eid}/{r['attribute']}: attribute in gold set not found in master's attributes[]")
-                continue
-            expected_pass = r["expected_verdict"] == "PASS"
-            if att["pass"] != expected_pass:
-                ok = fail(f"{eid}/{r['attribute']}: master pass={att['pass']} vs gold verdict={r['expected_verdict']}")
-        else:
-            if e.get("attribute") != r["attribute"]:
-                continue
-            if e["verdict"] != r["expected_verdict"]:
-                ok = fail(f"{eid}: master verdict={e['verdict']} vs gold verdict={r['expected_verdict']}")
+        att = next((a for a in e["attributes"] if a["attribute"] == r["attribute"]), None)
+        if att is None:
+            ok = fail(f"{eid}/{r['attribute']}: attribute in gold set not found in master's attributes[]")
+            continue
+        if att["verdict"] != r["expected_verdict"]:
+            ok = fail(f"{eid}/{r['attribute']}: master verdict={att['verdict']} vs gold verdict={r['expected_verdict']}")
+        gold_req = r["required_value"]
+        master_req = att["required_value"]
+        if gold_req and str(master_req) != gold_req:
+            ok = fail(f"{eid}/{r['attribute']}: master required_value={master_req!r} vs gold required_value={gold_req!r}")
+
+    # boundary_test rows are pure numeric vectors -- just sanity-check they're
+    # internally coherent (submitted value actually falls where the row claims).
+    for r in boundary_rows:
+        low = r["acceptable_range_low"]
+        high = r["acceptable_range_high"]
+        val = float(r["submitted_value"])
+        verdict = r["expected_verdict"]
+        in_range = True
+        if low:
+            in_range = in_range and val >= float(low)
+        if high:
+            in_range = in_range and val <= float(high)
+        expected_pass = verdict == "PASS"
+        if in_range != expected_pass:
+            ok = fail(f"{r['equipment_id']}: submitted={val} range=[{low},{high}] implies "
+                      f"{'PASS' if in_range else 'FAIL'} but row says {verdict}")
 
     with open(DATASET / "schedule" / "schedule.csv") as f:
         sched_rows = list(csv.DictReader(f))
@@ -79,8 +103,9 @@ def main():
             ok = fail(f"{r.get('rfi_id', '?')}: missing required RFI fields {required_keys - r.keys()}")
 
     if ok:
-        print(f"PASS: {len(equip_ids)} equipment, {len(gold_rows)} gold rows, "
-              f"{len(sched_rows)} schedule activities, {len(rfis)} RFIs -- all cross-references consistent")
+        print(f"PASS: {len(equip_ids)} equipment, {len(gold_rows)} equipment gold rows, "
+              f"{len(boundary_rows)} boundary test rows, {len(sched_rows)} schedule activities, "
+              f"{len(rfis)} RFIs -- all cross-references consistent")
     return 0 if ok else 1
 
 

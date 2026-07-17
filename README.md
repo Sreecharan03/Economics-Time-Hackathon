@@ -139,4 +139,39 @@ not a whole-project one. Docs-only changes (this README, service READMEs)
 are exempt and push freely. Local commits are never gated — only `git push`.
 
 This table is updated every push, reflecting real state, not aspiration.
-Last updated: 2026-07-17 (`2fb1384`, pushed to `origin/main`).
+Last updated: 2026-07-17 — gold-set audit (see below), pushed to `origin/main`.
+
+### Gold-set audit (2026-07-17)
+
+A critical re-read of `dataset/gold_set/compliance_gold_set.csv` and
+`equipment_master.json` (prompted by "don't think blindly, actually check
+it") found and fixed real problems before any service code depended on them:
+
+- `equipment_master.json` had two incompatible shapes (flat fields for
+  single-attribute equipment, a differently-shaped `attributes[]` array with
+  boolean `pass` for UPS items) — unified to one `attributes[]` shape with a
+  consistent `verdict` string on every item.
+- `compliance_gold_set.csv`'s `required_value` column mixed clean scalars
+  with composite narrative strings (e.g. `"5.75 (+/-7.5%, 5.32-6.18
+  acceptable)"`) for the tolerance-band cases — split into dedicated
+  `tolerance_pct`/`acceptable_range_low`/`acceptable_range_high` columns so
+  every `required_value` is now a plain scalar or empty.
+- Removed a `schedule_critical` column that had leaked schedule-service's
+  concern into the compliance gold set — a boundary the architecture is
+  explicitly designed to keep separate.
+- Added 7 boundary-value test rows (exact tolerance edges, one-unit-off
+  failures) — the original 14 rows had exactly one exact-boundary case
+  (`SWGR-LV-01`, 65==65) and zero coverage of the impedance tolerance band's
+  actual edges, which is precisely where an off-by-one comparison bug hides.
+- The propagation gold set's numeric values (previously only hand-verified
+  once, after the earlier CPM float bug) were independently recomputed with
+  a new script, `dataset/schedule/validate_propagation.py` — all 14 rows
+  across both scenarios now match a from-scratch forward/backward pass.
+- Caught mid-edit: a malformed CSV quote on the `ATS-01` row silently
+  swallowed the first attempt at the 7 new boundary rows into one field —
+  caught by re-parsing the file with `csv.reader` and checking row count,
+  not by re-reading it visually.
+
+All four dataset validators (`validate_cpm.py`, `validate_propagation.py`,
+`check_dataset_integrity.py`, plus an ad-hoc schema-shape check) pass as of
+this commit.

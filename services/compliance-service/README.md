@@ -70,7 +70,13 @@ this service does at request time).
 
 ## Test plan
 
-Unit tests run the full `dataset/gold_set/compliance_gold_set.csv` (14 rows,
-6 PASS / 5 FAIL / 1 CONFLICT) through this service and assert every verdict
-matches exactly — this is the eval, not just a smoke test. Zero tolerance for
-a silent verdict flip; any mismatch fails CI.
+Unit tests run the full `dataset/gold_set/compliance_gold_set.csv` through
+this service and assert every verdict matches exactly — this is the eval, not
+just a smoke test. Two `row_type`s: `equipment` (14 rows tied to the 12 real
+demo-project items — 6 PASS / 5 FAIL / 1 CONFLICT) and `boundary_test` (7
+synthetic numeric vectors probing exact tolerance-band/minimum-threshold
+edges, not tied to any real equipment). Both must pass. Zero tolerance for a
+silent verdict flip; any mismatch fails CI. This gold set is the seed/
+regression set, not the full ~1000-case parametrized suite required before
+push (see top-level README's push/test policy) — that suite is generated
+programmatically against the comparison function, not hand-typed here.

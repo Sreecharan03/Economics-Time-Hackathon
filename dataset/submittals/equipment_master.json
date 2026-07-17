@@ -1,5 +1,6 @@
 {
   "project": "Meridian Data Hall 1",
+  "schema_note": "Every equipment item uses the SAME attributes[] shape, even single-attribute items, so consumers never need to special-case on item shape. required_value is always a clean scalar (number or short enum string) or null -- never a composite narrative string. tolerance_pct/acceptable_range_low/acceptable_range_high are present on every attribute (null when not a tolerance-band check). conflicting_clauses is present on every attribute (null except CONFLICT verdicts). Per-attribute verdict is always one of PASS/FAIL/CONFLICT (string), never a bare boolean. Top-level equipment verdict is a rollup: FAIL if any attribute is FAIL, else CONFLICT if any attribute is CONFLICT, else PASS.",
   "equipment": [
     {
       "equipment_id": "XFMR-01",
@@ -7,16 +8,23 @@
       "oem": "ABB",
       "model": "KR-2500-22-0.4",
       "spec_section": "26 12 00",
-      "spec_clause": "26 12 00.3",
       "package_id": "PKG-XFMR",
       "submittal_no": "26 12 00-001",
       "raw_submittal_file": "XFMR-01_submittal.txt",
-      "attribute": "impedance_pct",
-      "submitted_value": 7.0,
-      "required_value": 5.75,
-      "tolerance_pct": 7.5,
-      "acceptable_range": [5.32, 6.18],
-      "unit": "%",
+      "attributes": [
+        {
+          "attribute": "impedance_pct",
+          "submitted_value": 7.0,
+          "required_value": 5.75,
+          "tolerance_pct": 7.5,
+          "acceptable_range_low": 5.32,
+          "acceptable_range_high": 6.18,
+          "unit": "%",
+          "spec_clause": "26 12 00.3",
+          "verdict": "FAIL",
+          "conflicting_clauses": null
+        }
+      ],
       "verdict": "FAIL",
       "deviation_type": "compliance_technical",
       "severity": "critical",
@@ -28,15 +36,23 @@
       "oem": "ABB",
       "model": "KR-2500-22-0.4-LZ",
       "spec_section": "26 12 00",
-      "spec_clause": "26 12 00.3",
       "package_id": "PKG-XFMR",
       "submittal_no": "26 12 00-002",
-      "attribute": "impedance_pct",
-      "submitted_value": 5.9,
-      "required_value": 5.75,
-      "tolerance_pct": 7.5,
-      "acceptable_range": [5.32, 6.18],
-      "unit": "%",
+      "raw_submittal_file": null,
+      "attributes": [
+        {
+          "attribute": "impedance_pct",
+          "submitted_value": 5.9,
+          "required_value": 5.75,
+          "tolerance_pct": 7.5,
+          "acceptable_range_low": 5.32,
+          "acceptable_range_high": 6.18,
+          "unit": "%",
+          "spec_clause": "26 12 00.3",
+          "verdict": "PASS",
+          "conflicting_clauses": null
+        }
+      ],
       "verdict": "PASS",
       "deviation_type": null,
       "severity": null,
@@ -48,14 +64,23 @@
       "oem": "Vertiv",
       "model": "PowerBoard MV 15kV/1200A",
       "spec_section": "26 13 00",
-      "spec_clause": "26 13 00.3",
       "package_id": "PKG-SWGR-MV",
       "submittal_no": "26 13 00-001",
       "raw_submittal_file": "SWGR-MV-01_submittal.txt",
-      "attribute": "short_circuit_withstand_kA",
-      "submitted_value": 25,
-      "required_value": 40,
-      "unit": "kA (3-sec)",
+      "attributes": [
+        {
+          "attribute": "short_circuit_withstand_kA",
+          "submitted_value": 25,
+          "required_value": 40,
+          "tolerance_pct": null,
+          "acceptable_range_low": 40,
+          "acceptable_range_high": null,
+          "unit": "kA (3-sec)",
+          "spec_clause": "26 13 00.3",
+          "verdict": "FAIL",
+          "conflicting_clauses": null
+        }
+      ],
       "verdict": "FAIL",
       "deviation_type": "compliance_technical",
       "severity": "high",
@@ -67,17 +92,27 @@
       "oem": "Eaton",
       "model": "Magnum SB Metal-Enclosed",
       "spec_section": "26 18 00",
-      "spec_clause": "26 18 00.1",
       "package_id": "PKG-SWGR-LV",
       "submittal_no": "26 18 00-001",
-      "attribute": "short_circuit_withstand_kA",
-      "submitted_value": 65,
-      "required_value": 65,
-      "unit": "kA RMS symmetrical",
+      "raw_submittal_file": null,
+      "attributes": [
+        {
+          "attribute": "short_circuit_withstand_kA",
+          "submitted_value": 65,
+          "required_value": 65,
+          "tolerance_pct": null,
+          "acceptable_range_low": 65,
+          "acceptable_range_high": null,
+          "unit": "kA RMS symmetrical",
+          "spec_clause": "26 18 00.1",
+          "verdict": "PASS",
+          "conflicting_clauses": null
+        }
+      ],
       "verdict": "PASS",
       "deviation_type": null,
       "severity": null,
-      "rationale": "Meets 65kA minimum, fully rated (non-series-rated)."
+      "rationale": "Meets 65kA minimum exactly (boundary case: submitted == required), fully rated (non-series-rated)."
     },
     {
       "equipment_id": "UPS-01",
@@ -85,13 +120,34 @@
       "oem": "Eaton",
       "model": "Power Xpert 9395, 750kW",
       "spec_section": "26 33 00",
-      "spec_clause": "26 33 00.4 / 26 33 00.3",
       "package_id": "PKG-UPS",
       "submittal_no": "26 33 00-001",
       "raw_submittal_file": "UPS-01_submittal.txt",
       "attributes": [
-        {"attribute": "input_breaker_kAIC", "submitted_value": 65, "required_value": 100, "unit": "kAIC", "pass": false},
-        {"attribute": "battery_runtime_min", "submitted_value": 7, "required_value": 10, "unit": "minutes at 100% load", "pass": false}
+        {
+          "attribute": "input_breaker_kAIC",
+          "submitted_value": 65,
+          "required_value": 100,
+          "tolerance_pct": null,
+          "acceptable_range_low": 100,
+          "acceptable_range_high": null,
+          "unit": "kAIC",
+          "spec_clause": "26 33 00.4",
+          "verdict": "FAIL",
+          "conflicting_clauses": null
+        },
+        {
+          "attribute": "battery_runtime_min",
+          "submitted_value": 7,
+          "required_value": 10,
+          "tolerance_pct": null,
+          "acceptable_range_low": 10,
+          "acceptable_range_high": null,
+          "unit": "minutes at 100% load",
+          "spec_clause": "26 33 00.3",
+          "verdict": "FAIL",
+          "conflicting_clauses": null
+        }
       ],
       "verdict": "FAIL",
       "deviation_type": "compliance_technical",
@@ -104,18 +160,39 @@
       "oem": "Eaton",
       "model": "Power Xpert 9395, 750kW",
       "spec_section": "26 33 00",
-      "spec_clause": "26 33 00.4 / 26 33 00.3",
       "package_id": "PKG-UPS",
       "submittal_no": "26 33 00-002",
       "raw_submittal_file": "UPS-02_submittal.txt",
       "attributes": [
-        {"attribute": "input_breaker_kAIC", "submitted_value": 100, "required_value": 100, "unit": "kAIC", "pass": true},
-        {"attribute": "battery_runtime_min", "submitted_value": 12, "required_value": 10, "unit": "minutes at 100% load", "pass": true}
+        {
+          "attribute": "input_breaker_kAIC",
+          "submitted_value": 100,
+          "required_value": 100,
+          "tolerance_pct": null,
+          "acceptable_range_low": 100,
+          "acceptable_range_high": null,
+          "unit": "kAIC",
+          "spec_clause": "26 33 00.4",
+          "verdict": "PASS",
+          "conflicting_clauses": null
+        },
+        {
+          "attribute": "battery_runtime_min",
+          "submitted_value": 12,
+          "required_value": 10,
+          "tolerance_pct": null,
+          "acceptable_range_low": 10,
+          "acceptable_range_high": null,
+          "unit": "minutes at 100% load",
+          "spec_clause": "26 33 00.3",
+          "verdict": "PASS",
+          "conflicting_clauses": null
+        }
       ],
       "verdict": "PASS",
       "deviation_type": null,
       "severity": null,
-      "rationale": "Meets both breaker interrupt rating and battery runtime requirements with margin."
+      "rationale": "Meets both breaker interrupt rating (boundary case: submitted == required exactly) and battery runtime requirements with margin."
     },
     {
       "equipment_id": "GEN-01",
@@ -123,13 +200,23 @@
       "oem": "Caterpillar",
       "model": "3512B TA, 1500kVA/1200ekW standby (DM8027)",
       "spec_section": "26 32 00",
-      "spec_clause": "26 32 00.2",
       "package_id": "PKG-GEN",
       "submittal_no": "26 32 00-001",
-      "attribute": "standby_output_kW",
-      "submitted_value": 1200,
-      "required_value": 1250,
-      "unit": "kW standby",
+      "raw_submittal_file": null,
+      "attributes": [
+        {
+          "attribute": "standby_output_kW",
+          "submitted_value": 1200,
+          "required_value": 1250,
+          "tolerance_pct": null,
+          "acceptable_range_low": 1250,
+          "acceptable_range_high": null,
+          "unit": "kW standby",
+          "spec_clause": "26 32 00.2",
+          "verdict": "FAIL",
+          "conflicting_clauses": null
+        }
+      ],
       "verdict": "FAIL",
       "deviation_type": "compliance_technical",
       "severity": "high",
@@ -141,13 +228,23 @@
       "oem": "Caterpillar",
       "model": "3516C, 1650kW standby",
       "spec_section": "26 32 00",
-      "spec_clause": "26 32 00.2",
       "package_id": "PKG-GEN",
       "submittal_no": "26 32 00-002",
-      "attribute": "standby_output_kW",
-      "submitted_value": 1650,
-      "required_value": 1250,
-      "unit": "kW standby",
+      "raw_submittal_file": null,
+      "attributes": [
+        {
+          "attribute": "standby_output_kW",
+          "submitted_value": 1650,
+          "required_value": 1250,
+          "tolerance_pct": null,
+          "acceptable_range_low": 1250,
+          "acceptable_range_high": null,
+          "unit": "kW standby",
+          "spec_clause": "26 32 00.2",
+          "verdict": "PASS",
+          "conflicting_clauses": null
+        }
+      ],
       "verdict": "PASS",
       "deviation_type": null,
       "severity": null,
@@ -159,14 +256,23 @@
       "oem": "Vertiv",
       "model": "Liebert HPC-S",
       "spec_section": "23 65 00",
-      "spec_clause": "23 65 00.2",
       "package_id": "PKG-CHILLER",
       "submittal_no": "23 65 00-001",
       "raw_submittal_file": "CRAC-01_submittal.txt",
-      "attribute": "refrigerant",
-      "submitted_value": "R-410A",
-      "required_value": "R-454B",
-      "unit": "refrigerant type",
+      "attributes": [
+        {
+          "attribute": "refrigerant",
+          "submitted_value": "R-410A",
+          "required_value": "R-454B",
+          "tolerance_pct": null,
+          "acceptable_range_low": null,
+          "acceptable_range_high": null,
+          "unit": "refrigerant type",
+          "spec_clause": "23 65 00.2",
+          "verdict": "FAIL",
+          "conflicting_clauses": null
+        }
+      ],
       "verdict": "FAIL",
       "deviation_type": "compliance_regulatory",
       "severity": "medium",
@@ -178,13 +284,23 @@
       "oem": "Vertiv",
       "model": "Liebert CRV, 40kW",
       "spec_section": "23 74 00",
-      "spec_clause": "23 74 00.1",
       "package_id": "PKG-INROW",
       "submittal_no": "23 74 00-001",
-      "attribute": "refrigerant",
-      "submitted_value": "R-454B",
-      "required_value": "R-454B",
-      "unit": "refrigerant type",
+      "raw_submittal_file": null,
+      "attributes": [
+        {
+          "attribute": "refrigerant",
+          "submitted_value": "R-454B",
+          "required_value": "R-454B",
+          "tolerance_pct": null,
+          "acceptable_range_low": null,
+          "acceptable_range_high": null,
+          "unit": "refrigerant type",
+          "spec_clause": "23 74 00.1",
+          "verdict": "PASS",
+          "conflicting_clauses": null
+        }
+      ],
       "verdict": "PASS",
       "deviation_type": null,
       "severity": null,
@@ -196,13 +312,23 @@
       "oem": "Eaton",
       "model": "PDU matched to 9395 output",
       "spec_section": "26 24 19",
-      "spec_clause": "26 24 19.1",
       "package_id": "PKG-PDU",
       "submittal_no": "26 24 19-001",
-      "attribute": "input_voltage",
-      "submitted_value": "480V",
-      "required_value": "480V",
-      "unit": "V",
+      "raw_submittal_file": null,
+      "attributes": [
+        {
+          "attribute": "input_voltage",
+          "submitted_value": "480V",
+          "required_value": "480V",
+          "tolerance_pct": null,
+          "acceptable_range_low": null,
+          "acceptable_range_high": null,
+          "unit": "V",
+          "spec_clause": "26 24 19.1",
+          "verdict": "PASS",
+          "conflicting_clauses": null
+        }
+      ],
       "verdict": "PASS",
       "deviation_type": null,
       "severity": null,
@@ -214,17 +340,30 @@
       "oem": "ASCO",
       "model": "ASCO 7000 Series",
       "spec_section": "26 36 00",
-      "spec_clause": "26 36 00.2 (conflicts with 26 05 00 para 3.4.C)",
       "package_id": "PKG-ATS",
       "submittal_no": "26 36 00-001",
-      "attribute": "transfer_time_cycles",
-      "submitted_value": 4,
-      "required_value": "CONFLICT: 4 cycles (26 36 00.2) vs 10 cycles (26 05 00 3.4.C)",
-      "unit": "cycles",
+      "raw_submittal_file": null,
+      "attributes": [
+        {
+          "attribute": "transfer_time_cycles",
+          "submitted_value": 4,
+          "required_value": null,
+          "tolerance_pct": null,
+          "acceptable_range_low": null,
+          "acceptable_range_high": null,
+          "unit": "cycles",
+          "spec_clause": "26 36 00.2",
+          "verdict": "CONFLICT",
+          "conflicting_clauses": [
+            {"clause": "26 36 00.2", "required_value": 4, "unit": "cycles"},
+            {"clause": "26 05 00 3.4.C", "required_value": 10, "unit": "cycles"}
+          ]
+        }
+      ],
       "verdict": "CONFLICT",
       "deviation_type": "spec_internal_conflict",
       "severity": "medium",
-      "rationale": "Submitted equipment meets the 4-cycle requirement in 26 36 00.2, but Section 26 05 00 paragraph 3.4.C (apparently carried over from an unrelated healthcare/NFPA 99 template) states a 10-cycle allowance. Per platform policy, conflicting spec requirements are surfaced for RFI, not auto-resolved."
+      "rationale": "Submitted equipment meets the 4-cycle requirement in 26 36 00.2, but Section 26 05 00 paragraph 3.4.C (apparently carried over from an unrelated healthcare/NFPA 99 template) states a 10-cycle allowance. Per platform policy, conflicting spec requirements are surfaced for RFI, not auto-resolved -- submitted_value is reported against BOTH clauses rather than picking one as canonical."
     }
   ]
 }

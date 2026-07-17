@@ -1,15 +1,22 @@
-equipment_id,attribute,submitted_value,required_value,unit,expected_verdict,deviation_type,severity,schedule_critical
-XFMR-01,impedance_pct,7.0,"5.75 (+/-7.5%, 5.32-6.18 acceptable)",%,FAIL,compliance_technical,critical,TRUE
-XFMR-02,impedance_pct,5.9,"5.75 (+/-7.5%, 5.32-6.18 acceptable)",%,PASS,,,FALSE
-SWGR-MV-01,short_circuit_withstand_kA,25,40,kA (3-sec),FAIL,compliance_technical,high,FALSE
-SWGR-LV-01,short_circuit_withstand_kA,65,65,kA RMS symmetrical,PASS,,,FALSE
-UPS-01,input_breaker_kAIC,65,100,kAIC,FAIL,compliance_technical,critical,FALSE
-UPS-01,battery_runtime_min,7,10,minutes at 100% load,FAIL,compliance_technical,critical,FALSE
-UPS-02,input_breaker_kAIC,100,100,kAIC,PASS,,,FALSE
-UPS-02,battery_runtime_min,12,10,minutes at 100% load,PASS,,,FALSE
-GEN-01,standby_output_kW,1200,1250,kW standby,FAIL,compliance_technical,high,FALSE
-GEN-02,standby_output_kW,1650,1250,kW standby,PASS,,,FALSE
-CRAC-01,refrigerant,R-410A,R-454B,refrigerant type,FAIL,compliance_regulatory,medium,FALSE
-CRAC-02,refrigerant,R-454B,R-454B,refrigerant type,PASS,,,FALSE
-PDU-01,input_voltage,480V,480V,V,PASS,,,FALSE
-ATS-01,transfer_time_cycles,4,"CONFLICT: 4 cycles (26 36 00.2) vs 10 cycles (26 05 00 3.4.C)",cycles,CONFLICT,spec_internal_conflict,medium,FALSE
+row_type,equipment_id,attribute,submitted_value,required_value,tolerance_pct,acceptable_range_low,acceptable_range_high,unit,expected_verdict,deviation_type,severity,notes
+equipment,XFMR-01,impedance_pct,7.0,5.75,7.5,5.32,6.18,%,FAIL,compliance_technical,critical,
+equipment,XFMR-02,impedance_pct,5.9,5.75,7.5,5.32,6.18,%,PASS,,,
+equipment,SWGR-MV-01,short_circuit_withstand_kA,25,40,,40,,kA (3-sec),FAIL,compliance_technical,high,
+equipment,SWGR-LV-01,short_circuit_withstand_kA,65,65,,65,,kA RMS symmetrical,PASS,,,boundary case: submitted == required exactly
+equipment,UPS-01,input_breaker_kAIC,65,100,,100,,kAIC,FAIL,compliance_technical,critical,
+equipment,UPS-01,battery_runtime_min,7,10,,10,,minutes at 100% load,FAIL,compliance_technical,critical,
+equipment,UPS-02,input_breaker_kAIC,100,100,,100,,kAIC,PASS,,,boundary case: submitted == required exactly
+equipment,UPS-02,battery_runtime_min,12,10,,10,,minutes at 100% load,PASS,,,
+equipment,GEN-01,standby_output_kW,1200,1250,,1250,,kW standby,FAIL,compliance_technical,high,
+equipment,GEN-02,standby_output_kW,1650,1250,,1250,,kW standby,PASS,,,
+equipment,CRAC-01,refrigerant,R-410A,R-454B,,,,refrigerant type,FAIL,compliance_regulatory,medium,enum check not numeric
+equipment,CRAC-02,refrigerant,R-454B,R-454B,,,,refrigerant type,PASS,,,enum check not numeric
+equipment,PDU-01,input_voltage,480V,480V,,,,V,PASS,,,enum check not numeric
+equipment,ATS-01,transfer_time_cycles,4,,,,,cycles,CONFLICT,spec_internal_conflict,medium,"spec self-contradicts (4 cycles per 26 36 00.2 vs 10 cycles per 26 05 00 3.4.C); full conflicting_clauses detail lives in equipment_master.json, not duplicated here"
+boundary_test,TEST-XFMR-BOUND-01,impedance_pct,5.32,5.75,7.5,5.32,6.18,%,PASS,,,exactly at lower tolerance edge -- tests inclusive boundary
+boundary_test,TEST-XFMR-BOUND-02,impedance_pct,6.18,5.75,7.5,5.32,6.18,%,PASS,,,exactly at upper tolerance edge -- tests inclusive boundary
+boundary_test,TEST-XFMR-BOUND-03,impedance_pct,5.31,5.75,7.5,5.32,6.18,%,FAIL,compliance_technical,critical,just below lower edge -- tests FAIL side of boundary
+boundary_test,TEST-XFMR-BOUND-04,impedance_pct,6.19,5.75,7.5,5.32,6.18,%,FAIL,compliance_technical,critical,just above upper edge -- tests FAIL side of boundary
+boundary_test,TEST-XFMR-BOUND-05,impedance_pct,5.75,5.75,7.5,5.32,6.18,%,PASS,,,exact nominal value -- dead center sanity check
+boundary_test,TEST-SWGR-BOUND-01,short_circuit_withstand_kA,40,40,,40,,kA (3-sec),PASS,,,exactly at minimum -- inclusive boundary
+boundary_test,TEST-SWGR-BOUND-02,short_circuit_withstand_kA,39,40,,40,,kA (3-sec),FAIL,compliance_technical,high,1 unit below minimum -- tightest FAIL boundary
