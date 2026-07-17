@@ -139,4 +139,4 @@ not a whole-project one. Docs-only changes (this README, service READMEs)
 are exempt and push freely. Local commits are never gated — only `git push`.
 
 This table is updated every push, reflecting real state, not aspiration.
-Last updated: 2026-07-17 (Phase 0 commit `b74cc57`, not yet pushed).
+Last updated: 2026-07-17 (`2fb1384`, pushed to `origin/main`).
