@@ -41,6 +41,11 @@ services:
       - SCHEDULE_SERVICE_URL=http://schedule-service:8003
       - RETRIEVAL_SERVICE_URL=http://retrieval-service:8004
       - DRAFTING_SERVICE_URL=http://drafting-service:8005
+      # Must match wherever the browser actually loads the frontend from --
+      # localhost:3000 for local dev, the public cloudspace URL when
+      # accessed remotely (CORS checks the browser's Origin header, which
+      # is the frontend's public URL, not gateway's own URL).
+      - FRONTEND_ORIGIN=${FRONTEND_ORIGIN:-http://localhost:3000}
     depends_on: [extraction-service, compliance-service, schedule-service, retrieval-service, drafting-service]
     # No DATABASE_URL -- the gateway itself is stateless and never touches
     # Postgres directly, only the five services over HTTP (see clients.py).
@@ -104,13 +109,14 @@ services:
   frontend:
     build:
       context: ../frontend
-      args:
-        # Browser JS calls the gateway directly at whatever URL the user's
-        # own browser can reach -- localhost:8000 (gateway's published port),
-        # not the container-network name "gateway" that server-side code in
-        # this compose file uses for the other services.
-        NEXT_PUBLIC_GATEWAY_URL: http://localhost:8000
     ports: ["3000:3000"]
+    environment:
+      # Server-side only (the app/api/gateway/ route handler reads this,
+      # the browser never does) -- the container-network address, not a
+      # public URL. This is the ONLY thing that needs gateway reachable;
+      # the browser only ever talks to the frontend's own origin, so only
+      # port 3000 needs to be exposed anywhere, cloud sandbox or otherwise.
+      - GATEWAY_INTERNAL_URL=http://gateway:8000
     depends_on: [gateway]
 
 volumes:

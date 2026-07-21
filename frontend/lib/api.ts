@@ -1,12 +1,15 @@
 import type { StreamEvent } from "./types";
 
-export const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || "http://localhost:8000";
-
 export interface ReviewPayload {
   equipment_id_hint: string;
   raw_submittal_text: string;
   spec_section_hint?: string;
 }
+
+// Same-origin path -- app/api/gateway/[...path]/route.ts proxies this to
+// the real gateway server-side, so the browser never needs gateway's own
+// port reachable (no CORS, no second public port to expose).
+const REVIEW_STREAM_PATH = "/api/gateway/review/submittal/stream";
 
 // EventSource can't send a POST body, so this reads the SSE stream by hand
 // off fetch's ReadableStream -- the wire format is identical ("data: {...}\n\n"),
@@ -16,7 +19,7 @@ export async function streamReview(
   onEvent: (event: StreamEvent) => void,
   signal?: AbortSignal
 ): Promise<void> {
-  const resp = await fetch(`${GATEWAY_URL}/review/submittal/stream`, {
+  const resp = await fetch(REVIEW_STREAM_PATH, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

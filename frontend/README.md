@@ -1,8 +1,15 @@
 # frontend
 
-Next.js 16 / React 19 / TypeScript / Tailwind v4. Talks only to `gateway`
-(`POST /review/submittal/stream`), never to the other five services
-directly, per the top-level README's orchestration boundary.
+Next.js 16 / React 19 / TypeScript / Tailwind v4. The *browser* never talks
+to `gateway` (or any other service) directly — it only ever calls this
+app's own `/api/gateway/*` route, which proxies server-side to `gateway`'s
+`POST /review/submittal/stream`. This exists for a real reason, not just
+tidiness: in a cloud sandbox / studio environment, only one port typically
+ends up publicly reachable. Routing everything through the frontend's own
+origin means only *that one port* ever needs to be exposed anywhere —
+gateway's port stays private on the container network
+(`http://gateway:8000`), and the browser is never blocked by CORS either,
+since every request is same-origin. See `app/api/gateway/[...path]/route.ts`.
 
 ## What it does
 
@@ -52,14 +59,18 @@ near-universal Inter/Geist pairing.
 
 ```bash
 npm install
-npm run dev          # expects gateway reachable at NEXT_PUBLIC_GATEWAY_URL (default http://localhost:8000)
+npm run dev          # expects gateway reachable at GATEWAY_INTERNAL_URL (default http://localhost:8000)
 ```
 
 Or via the full stack: `docker compose -f infra/docker-compose.yml up -d --build frontend`
-(brings up its `depends_on: [gateway]` chain too). `NEXT_PUBLIC_GATEWAY_URL`
-is baked in at Docker build time (Next.js inlines `NEXT_PUBLIC_*` vars into
-the client bundle at build, not read at container runtime) — see the `ARG`
-in `Dockerfile` and the `build.args` in `infra/docker-compose.yml`.
+(brings up its `depends_on: [gateway]` chain too). `GATEWAY_INTERNAL_URL` is
+a plain **runtime** env var read by the `/api/gateway/*` route handler on
+the server — unlike the `NEXT_PUBLIC_*` convention this project used
+before, it is never sent to the browser and doesn't need baking in at
+`next build`, so changing it is just a container restart, not a rebuild.
+docker-compose sets it to `http://gateway:8000` (the container-network
+address); local `npm run dev` falls back to `http://localhost:8000` via
+`.env.local`.
 
 ## Not built
 
