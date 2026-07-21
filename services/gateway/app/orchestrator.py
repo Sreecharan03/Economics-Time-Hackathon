@@ -10,6 +10,13 @@ maps between their schemas, and decides what's REQUIRED vs BEST-EFFORT:
   compliance verdict is still useful on its own; if any of these three is
   down or errors, the review degrades gracefully (null/empty field +
   pipeline_warnings entry) rather than failing the entire request.
+
+The optional `on_stage` callback (async, takes one dict) lets a caller
+observe real stage transitions as they happen -- used by main.py's SSE
+endpoint to give the frontend a live progress view. It defaults to a no-op
+so the plain `review_submittal` behavior (and all of test_orchestrator.py /
+test_live_full_pipeline.py, none of which pass on_stage) is unchanged; this
+is instrumentation, not a second code path to keep in sync.
 """
 from __future__ import annotations
 
@@ -21,6 +28,15 @@ from app import clients
 from app.clients import ServiceHTTPError, ServiceUnavailable
 from app.spec_filter import equipment_description, filter_checkable_attributes, is_known_equipment
 
+# Plain-language stage names, not service names -- these are what the
+# frontend shows a reviewer, who shouldn't need to know what
+# "extraction-service" means. Order matches README.md's orchestration order.
+STAGE_READING = "reading"
+STAGE_CHECKING = "checking"
+STAGE_CALENDAR = "calendar"
+STAGE_MEMORY = "memory"
+STAGE_WRITING = "writing"
+
 
 class GatewayError(RuntimeError):
     """Fatal error -- the review cannot proceed at all."""
@@ -29,6 +45,11 @@ class GatewayError(RuntimeError):
         self.status_code = status_code
         self.message = message
         super().__init__(message)
+
+
+async def _emit(on_stage, stage: str, status: str, **extra) -> None:
+    if on_stage is not None:
+        await on_stage({"stage": stage, "status": status, **extra})
 
 
 def _empty_result(equipment_id: str, extraction: dict, warnings: list[str]) -> dict:
@@ -115,20 +136,26 @@ async def review_submittal(
     equipment_id_hint: str,
     raw_submittal_text: str,
     spec_section_hint: str | None = None,
+    on_stage=None,
 ) -> dict:
     warnings: list[str] = []
 
     # --- Step 1: extraction (REQUIRED) ---
+    await _emit(on_stage, STAGE_READING, "started")
     try:
         extraction = await clients.call_extraction(client, equipment_id_hint, raw_submittal_text, spec_section_hint)
     except ServiceUnavailable as e:
+        await _emit(on_stage, STAGE_READING, "error", detail=e.detail)
         raise GatewayError(503, f"extraction-service unavailable: {e.detail}") from e
     except ServiceHTTPError as e:
+        await _emit(on_stage, STAGE_READING, "error", detail=e.detail)
         raise GatewayError(502, f"extraction-service error ({e.status_code}): {e.detail}") from e
 
     equipment_id = extraction.get("equipment_id") or equipment_id_hint
+    await _emit(on_stage, STAGE_READING, "done", data=extraction)
 
     if not extraction["extracted_attributes"]:
+        await _emit(on_stage, STAGE_CHECKING, "skipped", reason="no attributes extracted")
         return _empty_result(
             equipment_id,
             extraction,
@@ -136,6 +163,7 @@ async def review_submittal(
         )
 
     if not is_known_equipment(equipment_id):
+        await _emit(on_stage, STAGE_CHECKING, "skipped", reason="equipment not recognized")
         return _empty_result(equipment_id, extraction, [f"equipment_id {equipment_id!r} not recognized -- no spec requirements on file"])
 
     checkable, skipped, unit_notes = filter_checkable_attributes(equipment_id, extraction["extracted_attributes"])
@@ -144,6 +172,7 @@ async def review_submittal(
     if unit_notes:
         warnings.append(f"unit labels normalized to match spec (informational): {unit_notes}")
     if not checkable:
+        await _emit(on_stage, STAGE_CHECKING, "skipped", reason="no checkable attributes")
         return _empty_result(
             equipment_id,
             extraction,
@@ -152,11 +181,14 @@ async def review_submittal(
         )
 
     # --- Step 2: compliance (REQUIRED) ---
+    await _emit(on_stage, STAGE_CHECKING, "started")
     try:
         compliance = await clients.call_compliance(client, equipment_id, checkable)
     except ServiceUnavailable as e:
+        await _emit(on_stage, STAGE_CHECKING, "error", detail=e.detail)
         raise GatewayError(503, f"compliance-service unavailable: {e.detail}") from e
     except ServiceHTTPError as e:
+        await _emit(on_stage, STAGE_CHECKING, "error", detail=e.detail)
         # compliance-service 404s on an unrecognized (equipment_id, attribute)
         # pair -- shouldn't happen given the filter above, but if the filter
         # and compliance-service's own seed data ever drift, surface it as a
@@ -164,8 +196,12 @@ async def review_submittal(
         raise GatewayError(502, f"compliance-service error ({e.status_code}): {e.detail}") from e
 
     verdict = compliance["overall_verdict"]
+    await _emit(on_stage, STAGE_CHECKING, "done", data=compliance)
 
     if verdict == "PASS":
+        await _emit(on_stage, STAGE_CALENDAR, "skipped", reason="compliant, no further review needed")
+        await _emit(on_stage, STAGE_MEMORY, "skipped", reason="compliant, no further review needed")
+        await _emit(on_stage, STAGE_WRITING, "skipped", reason="compliant, no further review needed")
         return {
             "equipment_id": equipment_id,
             "extraction": extraction,
@@ -178,14 +214,20 @@ async def review_submittal(
         }
 
     # --- Steps 3: schedule + retrieval, run concurrently (BEST-EFFORT) ---
+    await _emit(on_stage, STAGE_CALENDAR, "started")
+    await _emit(on_stage, STAGE_MEMORY, "started")
     query_text = build_retrieval_query(equipment_id, compliance)
     schedule_result, precedent = await asyncio.gather(
         _safe_schedule(client, equipment_id, warnings),
         _safe_retrieval(client, query_text, warnings),
     )
+    await _emit(on_stage, STAGE_CALENDAR, "done", data=schedule_result)
+    await _emit(on_stage, STAGE_MEMORY, "done", data=precedent)
 
     # --- Step 4: drafting (BEST-EFFORT) ---
+    await _emit(on_stage, STAGE_WRITING, "started")
     draft_rfi = await _safe_drafting(client, equipment_id, compliance, schedule_result, precedent, warnings)
+    await _emit(on_stage, STAGE_WRITING, "done", data=draft_rfi)
 
     return {
         "equipment_id": equipment_id,
