@@ -107,7 +107,7 @@ that service's code.
 
 ## Progress
 
-**Overall: `[███████████████░░░░░]` ~76%**
+**Overall: `[████████████████░░░░]` ~82%**
 
 Weighted by remaining effort, not file count — Phase 0 was real work (dataset
 + validation + architecture) but implementation/testing across 6 services,
@@ -122,7 +122,7 @@ the frontend, and integration is the bulk of what's left.
 | `retrieval-service` | 12% | ✅ Embeddings + pgvector + API + tests + Docker, verified end-to-end | `[█████████████████░░░]` 85% |
 | `drafting-service` | 12% | ✅ Groq drafting + citation validation + API + tests + Docker, verified end-to-end incl. full cross-service chain | `[████████████████░░░░]` 80% |
 | `gateway` | 12% | ✅ Orchestration + 3 real cross-service bugs found & fixed + tests + Docker, verified end-to-end | `[███████████████░░░░░]` 80% |
-| `frontend` | 8% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
+| `frontend` | 8% | ✅ All 4 verdict states verified in a real browser + Docker, live SSE pipeline view | `[█████████████████░░░]` 85% |
 | Integration + demo polish | 5% | ⬜ Not started | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
 
 **What "done" means for a service** (see [Push/test policy](#pushtest-policy)
@@ -374,15 +374,54 @@ gold verdict, plus dedicated checks for both hero scenarios (XFMR-01
 CRITICAL, SWGR-MV-01 FLAGGED) and the ATS-01 CONFLICT case. All 48 pass
 against the fully containerized stack, not just a local dev run.
 
+### `frontend` (2026-07-21)
+
+Seventh piece, and the last 0% row. Next.js 16 / React 19 / TypeScript /
+Tailwind v4, talking only to `gateway` per the orchestration boundary.
+Deliberately not the default "AI product" look -- a warm graphite base
+instead of the near-universal blue-tinted dark theme, copper/amber as the
+interactive accent, and four distinct status hues (PASS green / FAIL red /
+CONFLICT violet / FLAGGED amber) so a spec-internal contradiction never
+reads as the same alert as a vendor's mistake, per the frontend spec's
+explicit warning about exactly that.
+
+The pipeline sidebar is real, not decorative: `gateway/app/main.py` gained
+a `POST /review/submittal/stream` SSE endpoint, and `orchestrator.py`
+gained an optional `on_stage` callback (default no-op, so all 48 existing
+gateway tests needed zero changes) that fires at every real stage
+transition. The frontend consumes that stream and updates five plain-
+language stages ("Reading document," "Checking against spec," "Checking
+schedule impact," "Finding similar cases," "Drafting response") live --
+including showing the two BEST-EFFORT stages (schedule + retrieval)
+visibly starting together and finishing independently, because that's what
+the orchestrator actually does, not a client-side animation timed to guess
+at it.
+
+Verified in an actual headless browser (no `chromium-cli` available in
+this environment; installed the `playwright` npm package and drove it
+directly), not just `next build` succeeding: all four possible verdict
+outcomes exercised end-to-end against the full seven-container Docker
+Compose stack (critical FAIL, non-critical FAIL, CONFLICT, and PASS),
+screenshotted at each stage, zero browser console errors, every number on
+screen cross-checked against the real API response (the schedule timeline
+showing day 745 -> day 759 is the actual CPM output, not a mock). The
+Approve button flips real local UI state; per the frontend spec, there is
+no send action and no persistence of that decision yet, honestly scoped
+that way rather than faked.
+
+Not built: PDF upload (extraction-service has no PDF parsing path yet),
+persisting the approve/reject decision (`drafted_rfi.approved` exists in
+the schema, nothing writes to it), auth.
+
 ### What's left
 
-`frontend` is the only remaining 0% row -- the one thing currently making
-this invisible to anyone not hitting the APIs directly. Every service that
-touches an LLM, a vector search, or now cross-service orchestration has
-been proven against the real dataset over real HTTP, not simulated -- three
-genuine integration bugs were found and fixed specifically because the
-gateway's live test chains real services together instead of testing each
-in isolation. What's left is a UI, not further de-risking.
+Every one of the six services plus the frontend has now been proven
+against the real dataset over real HTTP or in a real browser, not
+simulated -- five genuine integration bugs were found and fixed across the
+gateway and frontend work specifically because those two only surface once
+independently-tested pieces are actually chained together. What remains is
+final integration/demo polish (the 5% row still at 0%), not further
+de-risking of any individual piece.
 
 ### `schedule-service` (2026-07-17)
 
