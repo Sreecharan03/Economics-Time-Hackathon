@@ -1,0 +1,8 @@
+equipment_id,query_text,expected_rfi_id,notes
+XFMR-01,"Transformer impedance 7.0% submitted, spec requires 5.75% +/-7.5% tolerance, invalidates protective coordination study",RFI-HIST-003,exact precedent case cited in retrieval-service README example
+SWGR-MV-01,"Medium voltage switchgear short-circuit withstand rating 25kA submitted, spec requires 40kA minimum per fault current study",RFI-HIST-005,same fault-current-study reasoning as the precedent
+UPS-01,"UPS input breaker interrupting rating 65kAIC submitted, spec requires 100kAIC given coordinated fault current study",RFI-HIST-001,breaker-rating finding on UPS-01
+UPS-01,"UPS battery runtime 7 minutes at full load submitted, spec requires 10 minute minimum autonomy to bridge to generator start",RFI-HIST-002,battery-runtime finding on UPS-01 (same equipment, second attribute)
+CRAC-01,"Chiller refrigerant R-410A submitted, spec requires low-GWP R-454B per sustainability addendum",RFI-HIST-004,refrigerant substitution precedent
+ATS-01,"Automatic transfer switch spec sections disagree on max transfer time, 4 cycles vs 10 cycles, conflicting spec-internal requirement",RFI-HIST-007,spec-internal-conflict precedent, not a vendor deviation
+GEN-01,"Standby generator 1200ekW submitted, spec requires 1250kW minimum for N+1 redundancy sizing",RFI-HIST-006,generator undersizing precedent (bonus case beyond the README's 5, added for extra hit-rate coverage)
