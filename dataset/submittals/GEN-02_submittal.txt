@@ -1,0 +1,27 @@
+SUBMITTAL TRANSMITTAL
+Project: Meridian Data Hall 1
+Submittal No.: 26 32 00-002
+Spec Section: 26 32 00 – Engine Generators
+Equipment Tag: GEN-02
+Vendor: Caterpillar (via authorized Cat dealer)
+Contractor: [General Contractor]
+Date: (synthetic)
+
+---
+CATERPILLAR DIESEL GENERATOR SET
+Model: CAT 3516C, Standby Rating: 1650 kW
+50 Hz, 1500 rpm, 400 Volts
+
+ENGINE
+Model: CAT 3516C, V-16, 4-Stroke Water-Cooled Diesel
+Governor Type: ADEM4
+Fuel System: Electronic unit injection
+
+GENERATOR SET PACKAGE PERFORMANCE
+Genset Power Rating with fan: 1650 kW standby. Upsized frame ordered per Owner's direction to provide margin above the project's minimum output requirement.
+Design Criteria: Accepts 100% rated load in one step per NFPA 110; meets ISO 8528-5 transient response.
+
+CONTROLS
+CAT EMCP 4 Genset Controller, configured for N+1 paralleling with the adjacent generator.
+
+Vendor Note: This submittal covers the second (redundant) generator in the N+1 pair. The first unit is submitted separately under Submittal No. 26 32 00-001.

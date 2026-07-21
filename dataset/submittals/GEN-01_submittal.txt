@@ -1,0 +1,29 @@
+SUBMITTAL TRANSMITTAL
+Project: Meridian Data Hall 1
+Submittal No.: 26 32 00-001
+Spec Section: 26 32 00 – Engine Generators
+Equipment Tag: GEN-01
+Vendor: Caterpillar (via authorized Cat dealer)
+Contractor: [General Contractor]
+Date: (synthetic)
+
+---
+CATERPILLAR DIESEL GENERATOR SET
+Performance No.: DM8027
+Standby Rating: 1200 ekW / 1500 kVA
+50 Hz, 1500 rpm, 400 Volts
+
+ENGINE
+Model: CAT 3512B TA, V-12, 4-Stroke Water-Cooled Diesel
+Governor Type: ADEM3
+Fuel System: Electronic unit injection
+
+GENERATOR SET PACKAGE PERFORMANCE
+Genset Power Rating @ 0.8 pf: 1500 kVA
+Genset Power Rating with fan: 1200 ekW
+Design Criteria: Accepts 100% rated load in one step per NFPA 110; meets ISO 8528-5 transient response.
+
+CONTROLS
+CAT EMCP 4 Genset Controller, protective relaying (27/59, 81 o/u, 32, 32RV, 50/51) standard.
+
+Vendor Note: 1200 ekW is Caterpillar's standard standby rating for this frame/engine combination at the stated site conditions (per Performance No. DM8027, March 2014 issue). An oversized/premium generator option is available on special order for higher output — see Cat dealer for lead time and pricing.

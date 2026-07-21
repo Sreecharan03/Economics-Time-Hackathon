@@ -1,0 +1,37 @@
+SUBMITTAL TRANSMITTAL
+Project: Meridian Data Hall 1
+Submittal No.: 26 12 00-002
+Spec Section: 26 12 00 – Medium Voltage Transformers
+Equipment Tag: XFMR-02
+Vendor: ABB Electrification
+Contractor: [General Contractor]
+Date: (synthetic)
+
+---
+ABB CAST RESIN DRY-TYPE TRANSFORMER
+Type: KR Series, Cast Coil, Custom Low-Impedance Wind
+Product Code: KR-2500-22-0.4-LZ
+
+ELECTRICAL DATA
+Rated Power: 2500 kVA
+Phases: 3
+Frequency: 50/60 Hz
+Primary Voltage: 22,000 V, Delta
+Secondary Voltage: 400Y/230 V
+Vector Group: Dyn11
+Insulation Class: F (155°C)
+BIL Primary: 125 kV
+Tap Changer: ±2 x 2.5% (off-circuit)
+
+PERFORMANCE
+No-Load Losses: 4,700 W
+Load Losses (75°C): 21,400 W
+Impedance (Z%): 5.9% at rated tap, measured per factory routine test — custom low-impedance wind per Owner's coordination study requirement (see prior RFI on XFMR-01)
+Sound Level: 68 dB(A) at 1m
+
+CONSTRUCTION
+Enclosure: IP23, floor-mounted, indoor vault
+Winding Material: Aluminum
+Cooling Class: AN (natural air)
+
+Factory Test Certificate: Routine test report attached (impedance measured 5.9% ±0.1%, within the 5.32-6.18% acceptable tolerance band per Section 26 12 00.3).

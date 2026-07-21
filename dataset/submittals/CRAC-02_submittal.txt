@@ -1,0 +1,26 @@
+SUBMITTAL TRANSMITTAL
+Project: Meridian Data Hall 1
+Submittal No.: 23 74 00-001
+Spec Section: 23 74 00 – In-Row / Precision Cooling Units
+Equipment Tag: CRAC-02
+Vendor: Vertiv
+Contractor: [General Contractor]
+Date: (synthetic)
+
+---
+VERTIV LIEBERT CRV IN-ROW COOLING UNIT
+Product Line: Liebert CRV, 10-40kW range
+
+UNIT DATA
+Sensible Cooling Capacity: 40 kW — meets 40kW minimum per Section 23 74 00.1
+Refrigerant: R-454B, low-GWP per Owner's Sustainability Requirements Addendum SR-04 (same policy referenced in Section 23 65 00.2)
+Configuration: N+1 redundant per pod, row-based deployment
+
+ELECTRICAL
+Voltage: 480V, 3-phase, 60 Hz
+
+CONSTRUCTION
+Enclosure: Indoor, white space rated
+Airflow: Front-to-rear, hot/cold aisle containment compatible
+
+Vendor Note: R-454B is Vertiv's standard low-GWP offering for this frame size in the Liebert CRV line, no lead-time adder vs. legacy refrigerant options.

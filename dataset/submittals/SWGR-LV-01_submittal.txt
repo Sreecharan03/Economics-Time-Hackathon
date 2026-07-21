@@ -1,0 +1,31 @@
+SUBMITTAL TRANSMITTAL
+Project: Meridian Data Hall 1
+Submittal No.: 26 18 00-001
+Spec Section: 26 18 00 – Low Voltage Switchgear
+Equipment Tag: SWGR-LV-01
+Vendor: Eaton
+Contractor: [General Contractor]
+Date: (synthetic)
+
+---
+EATON MAGNUM SB METAL-ENCLOSED LOW VOLTAGE SWITCHGEAR
+Type: Drawout, Metal-Enclosed, 480Y/277V
+
+ELECTRICAL DATA
+Rated Voltage: 480Y/277V, 3-phase, 4-wire
+Rated Continuous Current (Main Bus): 4000A
+Rated Frequency: 60 Hz
+Breaker Type: Magnum DS, drawout, electrically operated
+
+SHORT-CIRCUIT RATINGS
+Rated Short-Circuit Withstand: 65 kA RMS symmetrical, fully rated (non-series-rated) throughout — meets Section 26 18 00.1 minimum exactly.
+
+CONSTRUCTION
+Enclosure: NEMA 1, indoor, freestanding, front and rear access
+Bus Material: Copper, silver-plated at joints
+
+STANDARDS
+UL 1558 (Metal-Enclosed Low-Voltage Switchgear)
+IEEE C37.20.1
+
+Factory witness test scheduled per project milestone schedule.

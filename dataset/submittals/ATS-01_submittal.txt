@@ -1,0 +1,24 @@
+SUBMITTAL TRANSMITTAL
+Project: Meridian Data Hall 1
+Submittal No.: 26 36 00-001
+Spec Section: 26 36 00 – Transfer Switches
+Equipment Tag: ATS-01
+Vendor: ASCO Power Technologies
+Contractor: [General Contractor]
+Date: (synthetic)
+
+---
+ASCO 7000 SERIES AUTOMATIC TRANSFER SWITCH
+Type: Open transition, microprocessor-controlled
+
+ELECTRICAL DATA
+Rated Voltage: 480V, 3-phase, 4-wire
+Rated Current: 800A
+
+PERFORMANCE
+Transfer Time: 4 cycles maximum, open-transition — meets Section 26 36 00.2 requirement.
+
+CONTROLS
+Microprocessor controller, programmable transfer/retransfer logic, exercise scheduling.
+
+Vendor Note: Standard ASCO 7000 Series transfer time is 4 cycles for this frame. Contractor to confirm applicability of Section 26 05 00 paragraph 3.4.C's 10-cycle reference, which appears to originate from a different base-building system type.

@@ -38,7 +38,7 @@
       "spec_section": "26 12 00",
       "package_id": "PKG-XFMR",
       "submittal_no": "26 12 00-002",
-      "raw_submittal_file": null,
+      "raw_submittal_file": "XFMR-02_submittal.txt",
       "attributes": [
         {
           "attribute": "impedance_pct",
@@ -94,7 +94,7 @@
       "spec_section": "26 18 00",
       "package_id": "PKG-SWGR-LV",
       "submittal_no": "26 18 00-001",
-      "raw_submittal_file": null,
+      "raw_submittal_file": "SWGR-LV-01_submittal.txt",
       "attributes": [
         {
           "attribute": "short_circuit_withstand_kA",
@@ -202,7 +202,7 @@
       "spec_section": "26 32 00",
       "package_id": "PKG-GEN",
       "submittal_no": "26 32 00-001",
-      "raw_submittal_file": null,
+      "raw_submittal_file": "GEN-01_submittal.txt",
       "attributes": [
         {
           "attribute": "standby_output_kW",
@@ -230,7 +230,7 @@
       "spec_section": "26 32 00",
       "package_id": "PKG-GEN",
       "submittal_no": "26 32 00-002",
-      "raw_submittal_file": null,
+      "raw_submittal_file": "GEN-02_submittal.txt",
       "attributes": [
         {
           "attribute": "standby_output_kW",
@@ -286,7 +286,7 @@
       "spec_section": "23 74 00",
       "package_id": "PKG-INROW",
       "submittal_no": "23 74 00-001",
-      "raw_submittal_file": null,
+      "raw_submittal_file": "CRAC-02_submittal.txt",
       "attributes": [
         {
           "attribute": "refrigerant",
@@ -314,7 +314,7 @@
       "spec_section": "26 24 19",
       "package_id": "PKG-PDU",
       "submittal_no": "26 24 19-001",
-      "raw_submittal_file": null,
+      "raw_submittal_file": "PDU-01_submittal.txt",
       "attributes": [
         {
           "attribute": "input_voltage",
@@ -342,7 +342,7 @@
       "spec_section": "26 36 00",
       "package_id": "PKG-ATS",
       "submittal_no": "26 36 00-001",
-      "raw_submittal_file": null,
+      "raw_submittal_file": "ATS-01_submittal.txt",
       "attributes": [
         {
           "attribute": "transfer_time_cycles",

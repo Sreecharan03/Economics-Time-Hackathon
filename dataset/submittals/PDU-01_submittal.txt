@@ -1,0 +1,23 @@
+SUBMITTAL TRANSMITTAL
+Project: Meridian Data Hall 1
+Submittal No.: 26 24 19-001
+Spec Section: 26 24 19 – Power Distribution Units
+Equipment Tag: PDU-01
+Vendor: Eaton
+Contractor: [General Contractor]
+Date: (synthetic)
+
+---
+EATON POWER DISTRIBUTION UNIT
+Type: Floor-mounted PDU, matched to Power Xpert 9395 UPS output
+
+ELECTRICAL DATA
+Input Voltage: 480V, 3-phase — matches UPS-01/UPS-02 output per Section 26 24 19.1
+Output: Panelboard-fed branch circuits, 208Y/120V via integral transformer
+Main Breaker: Molded case, 100% rated
+
+CONSTRUCTION
+Enclosure: NEMA 1, front-access
+Metering: Integrated branch circuit monitoring (BCM)
+
+Factory witness test scheduled per project milestone schedule.
