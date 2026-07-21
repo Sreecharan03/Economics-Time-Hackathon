@@ -30,17 +30,20 @@ services:
       timeout: 5s
       retries: 10
 
-  # gateway:
-  #   build: ../services/gateway
-  #   ports: ["8000:8000"]
-  #   environment:
-  #     - DATABASE_URL=postgresql://meridian:meridian_dev_only@postgres:5432/meridian
-  #     - EXTRACTION_SERVICE_URL=http://extraction-service:8001
-  #     - COMPLIANCE_SERVICE_URL=http://compliance-service:8002
-  #     - SCHEDULE_SERVICE_URL=http://schedule-service:8003
-  #     - RETRIEVAL_SERVICE_URL=http://retrieval-service:8004
-  #     - DRAFTING_SERVICE_URL=http://drafting-service:8005
-  #   depends_on: [postgres, extraction-service, compliance-service, schedule-service, retrieval-service, drafting-service]
+  gateway:
+    build:
+      context: ..
+      dockerfile: services/gateway/Dockerfile
+    ports: ["8000:8000"]
+    environment:
+      - EXTRACTION_SERVICE_URL=http://extraction-service:8001
+      - COMPLIANCE_SERVICE_URL=http://compliance-service:8002
+      - SCHEDULE_SERVICE_URL=http://schedule-service:8003
+      - RETRIEVAL_SERVICE_URL=http://retrieval-service:8004
+      - DRAFTING_SERVICE_URL=http://drafting-service:8005
+    depends_on: [extraction-service, compliance-service, schedule-service, retrieval-service, drafting-service]
+    # No DATABASE_URL -- the gateway itself is stateless and never touches
+    # Postgres directly, only the five services over HTTP (see clients.py).
   #
   extraction-service:
     build:
