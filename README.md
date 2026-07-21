@@ -413,6 +413,29 @@ Not built: PDF upload (extraction-service has no PDF parsing path yet),
 persisting the approve/reject decision (`drafted_rfi.approved` exists in
 the schema, nothing writes to it), auth.
 
+### Real deployment bug: same-origin proxy (2026-07-21)
+
+Found only by actually deploying to a cloud sandbox and clicking through it
+from a real external browser, not by any local test: the frontend was
+calling `gateway` at its own public URL directly from browser JS. That
+works fine when both are on `localhost`, but breaks the moment the two are
+on different machines from the browser's point of view -- which is exactly
+what happens in a cloud studio environment, where typically only *one*
+port ends up publicly exposed. The browser's request to gateway's port
+never even reached the container; it dead-ended at the sandbox's edge
+proxy, surfacing as a CORS error with no useful signal about the real
+cause.
+
+Fixed by adding `app/api/gateway/[...path]/route.ts` -- a Next.js Route
+Handler that proxies same-origin, forwarding to `gateway` over the private
+Docker network (`http://gateway:8000`) from the server side, streaming the
+SSE response straight through rather than buffering it. The browser now
+only ever talks to the frontend's own origin. This is a strictly better
+architecture regardless of environment (one less CORS surface, one less
+public port needed generally), not just a workaround for this sandbox --
+kept it after moving off the temporary `NEXT_PUBLIC_GATEWAY_URL` /
+`FRONTEND_ORIGIN` build-time approach entirely.
+
 ### What's left
 
 Every one of the six services plus the frontend has now been proven
