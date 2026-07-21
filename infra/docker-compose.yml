@@ -42,13 +42,18 @@ services:
   #     - DRAFTING_SERVICE_URL=http://drafting-service:8005
   #   depends_on: [postgres, extraction-service, compliance-service, schedule-service, retrieval-service, drafting-service]
   #
-  # extraction-service:
-  #   build: ../services/extraction-service
-  #   ports: ["8001:8001"]
-  #   environment:
-  #     - DATABASE_URL=postgresql://meridian:meridian_dev_only@postgres:5432/meridian
-  #     - GROQ_API_KEY=${GROQ_API_KEY}
-  #   depends_on: [postgres]
+  extraction-service:
+    build:
+      context: ..
+      dockerfile: services/extraction-service/Dockerfile
+    ports: ["8001:8001"]
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    # No DATABASE_URL / depends_on postgres -- this service reads the
+    # attribute vocabulary straight from equipment_master.json (baked into
+    # the image, same pattern as compliance-service), and does not persist
+    # extraction results itself (that's submittal_attribute's job, once a
+    # caller -- eventually gateway -- writes there).
   #
   compliance-service:
     build:
@@ -72,19 +77,26 @@ services:
     # compliance-service above: reads dataset/schedule/schedule.csv (baked
     # into the image at SCHEDULE_CSV_PATH) directly, not from Postgres.
   #
-  # retrieval-service:
-  #   build: ../services/retrieval-service
-  #   ports: ["8004:8004"]
-  #   environment:
-  #     - DATABASE_URL=postgresql://meridian:meridian_dev_only@postgres:5432/meridian
-  #   depends_on: [postgres]
+  retrieval-service:
+    build:
+      context: ..
+      dockerfile: services/retrieval-service/Dockerfile
+    ports: ["8004:8004"]
+    environment:
+      - DATABASE_URL=postgresql://meridian:meridian_dev_only@postgres:5432/meridian
+    depends_on:
+      postgres:
+        condition: service_healthy
   #
-  # drafting-service:
-  #   build: ../services/drafting-service
-  #   ports: ["8005:8005"]
-  #   environment:
-  #     - GROQ_API_KEY=${GROQ_API_KEY}
-  #   depends_on: [postgres]
+  drafting-service:
+    build:
+      context: ..
+      dockerfile: services/drafting-service/Dockerfile
+    ports: ["8005:8005"]
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    # No DB dependency -- this service is stateless, takes already-decided
+    # facts as input (compliance/schedule/precedent) and returns a draft.
   #
   # frontend:
   #   build: ../frontend

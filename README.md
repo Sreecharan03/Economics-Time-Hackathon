@@ -107,7 +107,7 @@ that service's code.
 
 ## Progress
 
-**Overall: `[███████░░░░░░░░░░░░░]` ~37%**
+**Overall: `[█████████████░░░░░░░]` ~66%**
 
 Weighted by remaining effort, not file count — Phase 0 was real work (dataset
 + validation + architecture) but implementation/testing across 6 services,
@@ -118,9 +118,9 @@ the frontend, and integration is the bulk of what's left.
 | Phase 0 — design, dataset, scaffold | 15% | ✅ Complete | `[████████████████████]` 100% |
 | `compliance-service` | 12% | ✅ Engine + API + tests + Docker, verified end-to-end | `[██████████████████░░]` 90% |
 | `schedule-service` | 12% | ✅ Engine + API + tests + Docker, verified end-to-end | `[██████████████████░░]` 90% |
-| `extraction-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
-| `retrieval-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
-| `drafting-service` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
+| `extraction-service` | 12% | ✅ Groq extraction + verified source-spans + API + tests + Docker, verified end-to-end | `[████████████████░░░░]` 80% |
+| `retrieval-service` | 12% | ✅ Embeddings + pgvector + API + tests + Docker, verified end-to-end | `[█████████████████░░░]` 85% |
+| `drafting-service` | 12% | ✅ Groq drafting + citation validation + API + tests + Docker, verified end-to-end incl. full cross-service chain | `[████████████████░░░░]` 80% |
 | `gateway` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
 | `frontend` | 8% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
 | Integration + demo polish | 5% | ⬜ Not started | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
@@ -159,6 +159,155 @@ local dev path happened to resolve fine.
 Not yet done: Postgres-backed spec-requirement loading (currently the
 JSON-file seed, an intentional interim stand-in documented in
 `spec_data.py`) and `DATABASE_URL` wiring in `docker-compose.yml`.
+
+### `retrieval-service` (2026-07-21)
+
+Third service implemented, and the first to actually use Postgres at request
+time (`compliance-service`/`schedule-service` both read their seed files
+directly, by design, per their own README notes). `embeddings.py` wraps a
+local `sentence-transformers` model (`all-MiniLM-L6-v2`, 384-dim, no external
+API — Groq has no embeddings endpoint) and is the only place index-time and
+query-time text formatting can diverge, so both `seed_rfis.py` and
+`main.py` call the same `rfi_index_text()` helper rather than each building
+their own string. `main.py` does one thing: embed the query, run a pgvector
+cosine search, shape the response — no ranking logic beyond what the SQL
+`ORDER BY embedding <=> :vec` already does.
+
+Filled a gap the service's own README flagged as a tracked follow-up: wrote
+`dataset/gold_set/rfi_retrieval_gold_set.csv`, mapping each of the 5 seeded
+deviations named in the README (plus a 6th, GEN-01, added for extra hit-rate
+coverage) to its known-relevant precedent RFI.
+
+Test suite: 35 pytest nodes (7 in `test_embeddings.py`, 28 in `test_api.py`),
+covering every gold-set row at both hit-rate@3 (README's stated bar) and the
+stronger rank-1 exact match, `top_k` boundary validation, empty/missing-field
+rejection, score-ordering and score-bounds sanity, and a nonsense-query
+smoke test.
+
+Verified beyond pytest: built as a real Docker image, run as a container
+alongside `postgres` via `docker compose up`, seeded through the real
+`seed_rfis.py` running inside the container against the containerized DB,
+then hit over real HTTP — `RFI-HIST-003` (the exact precedent case) came
+back for the transformer-impedance query at 0.763 cosine similarity vs. 0.343
+for the next-best match, a real semantic margin, not a coincidence of the
+tiny corpus.
+
+One real bug caught in that process, not by pytest but by actually querying
+the running service twice with different `top_k` values and noticing the
+result count didn't match: the `rfi_embedding` table's `ivfflat` index was
+built with `lists = 20` for a corpus that currently *has* 20 rows. pgvector's
+default `ivfflat.probes = 1` means only ~1/20th of the corpus gets searched
+per query at that list count — queries were silently dropping relevant
+results, including the gold-set precedents, well before any test caught it
+(the first test run had 14 of 35 nodes failing on exactly this). Fixed with
+`SET LOCAL ivfflat.probes = 20` per request in `main.py`, forcing
+exhaustive-equivalent search; flagged in a code comment to revisit once the
+corpus is large enough that lists/probes should scale with row count instead
+of being pinned to "search everything."
+
+Not yet done: `extraction-service` and `drafting-service` (both need
+`GROQ_API_KEY`, the one piece of external configuration this project depends
+on) and `gateway` to orchestrate all three real services plus the two
+LLM-backed ones behind a single HTTP surface for the frontend.
+
+### `extraction-service` (2026-07-21)
+
+Fourth service implemented -- the first (and, by design, only) service that
+calls an LLM to do real interpretive work rather than compose already-decided
+facts (that's `drafting-service`'s narrower job). Groq access came online
+this session (`GROQ_API_KEY` now set in `infra/.env`, gitignored, never
+committed). `llm_client.py` is a thin wrapper (model: `llama-3.3-70b-versatile`)
+kept deliberately separate from `extractor.py` so the LLM call is injectable
+in tests. `units.py` handles the common real failure mode of the model
+embedding a unit inside the value string (`"7.0%"` instead of `value: 7.0,
+unit: "%"`) despite being told not to -- plain Python, not a second model
+call, per the project's extraction-vs-judgment split.
+
+The actual anti-hallucination mechanism is deterministic, not the model's
+self-reported confidence: every `source_span` the model returns is checked
+as a real substring of the input text (`verify_source_span`), whitespace-
+normalized, with a fuzzy case-insensitive fallback -- confidence (0.95 /
+0.7 / 0.3) is derived from that check, not asked of the model.
+
+Test suite: 57 pytest nodes (19 in `test_units.py`, 24 in `test_extractor.py`,
+7 in `test_api.py`), covering JSON-fence stripping, malformed-output
+rejection, missing-field skip-not-crash behavior, hallucinated-span
+detection, and the full mocked-LLM pipeline -- all fast and free (injected
+fake `llm_fn`, no network). Separately, `test_live_groq.py` (7 more nodes,
+skipped automatically without `GROQ_API_KEY`) runs the real pipeline against
+all 5 actual `dataset/submittals/*.txt` files and asserts 100% recall against
+the known submitted values, per this service's own README test plan
+(target >=0.90) -- all 7 passed on the first real run, including the
+dual-attribute UPS-01/UPS-02 cases.
+
+Verified beyond pytest: built as a real Docker image, run as a container
+with `GROQ_API_KEY` passed through `docker compose`, hit over real HTTP
+against the actual XFMR-01 submittal text -- extracted all 17 spec values
+present in the document (not just the one the gold set tracks), every
+`source_span` an exact verbatim match (confidence 0.95, zero warnings),
+including the impedance value that drives the hero compliance scenario.
+
+Not yet done: table extraction (README's pipeline step 2 -- no submittal in
+the current dataset has a multi-row table, so this hasn't been exercised;
+flagged, not silently skipped) and entity-resolution suggestions (explicitly
+out of scope per README, needs a human-confirm UI step that doesn't exist
+yet).
+
+### `drafting-service` (2026-07-21)
+
+Fifth service implemented -- the last of the three originally-scoped-but-
+unbuilt services from this session's starting point. Takes already-decided
+facts from `compliance-service`/`schedule-service`/`retrieval-service` as
+input and composes prose; it does not judge, compute, or search anything
+itself (see README's "what it does NOT do"). `requires_human_approval` is
+hardcoded `True` in `main.py`, not a model-decided field -- no draft can
+waive the human sign-off gate regardless of what the LLM returns.
+
+The real guardrail is `validate_citations`: every citation the model claims
+is checked against a `collect_valid_refs()` set built directly from the
+request payload (spec_section strings from `compliance_result`, the
+equipment_id, schedule activity_ids from `schedule_result`, rfi_ids from
+`precedent`) -- a citation pointing anywhere else is dropped and surfaced in
+`draft_warnings`, never silently kept. This is exactly the structural test
+the service's own README specifies ("a unit test asserts this structurally
+... rather than trying to grade prose quality").
+
+Test suite: 38 pytest nodes (25 in `test_drafter.py`, 13 in `test_api.py`)
+against an injected fake `llm_fn`, covering fence-stripped/malformed JSON,
+missing-key rejection, citation validation (valid/dropped/wrong-type/
+missing-field/mixed cases), and the optional `schedule_result`/`precedent`
+paths. Separately, `test_live_groq.py` (4 more nodes, skipped without
+`GROQ_API_KEY` or without the three upstream services reachable) does not
+just call Groq in isolation -- it calls the *real* `compliance-service`,
+`schedule-service`, and `retrieval-service` containers over HTTP to build
+the request, then drafts against real Groq, for both the XFMR-01 (CRITICAL)
+and SWGR-MV-01 (FLAGGED) scenarios. All 4 passed on the first real run,
+zero dropped citations.
+
+Verified beyond pytest: all four real services (`compliance-service`,
+`schedule-service`, `retrieval-service`, `drafting-service`) built as Docker
+images, brought up together via `docker compose`, and chained over real
+HTTP end-to-end -- the exact "spec deviation -> schedule impact -> cited
+RFI" narrative the source evaluation names as the project's only real
+differentiation, now running as actual services talking to each other, not
+a single script simulating the chain. Draft output for XFMR-01: cites
+`26 12 00.3`, states the 14-day IST slip, references `RFI-HIST-003` by name
+with its actual resolution, and closes with the required human-sign-off
+language -- all three citations independently verified to resolve to real
+payload fields.
+
+Not yet done: persisting drafts to the `drafted_rfi` table (currently
+stateless request/response, no `DATABASE_URL`) and the `approved` boolean
+workflow that table already has a column for.
+
+### What's left
+
+`gateway` (orchestrate all five real services behind one HTTP surface) and
+`frontend` (the only thing currently making this invisible to anyone who
+isn't hitting the APIs directly) are the two remaining 0% rows, plus final
+integration/demo polish. Every service that touches an LLM or a vector
+search has now been proven against the real dataset over real HTTP, not
+simulated -- what's left is orchestration and a UI, not further de-risking.
 
 ### `schedule-service` (2026-07-17)
 
