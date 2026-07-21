@@ -107,7 +107,7 @@ that service's code.
 
 ## Progress
 
-**Overall: `[█████████████░░░░░░░]` ~66%**
+**Overall: `[███████████████░░░░░]` ~76%**
 
 Weighted by remaining effort, not file count — Phase 0 was real work (dataset
 + validation + architecture) but implementation/testing across 6 services,
@@ -121,7 +121,7 @@ the frontend, and integration is the bulk of what's left.
 | `extraction-service` | 12% | ✅ Groq extraction + verified source-spans + API + tests + Docker, verified end-to-end | `[████████████████░░░░]` 80% |
 | `retrieval-service` | 12% | ✅ Embeddings + pgvector + API + tests + Docker, verified end-to-end | `[█████████████████░░░]` 85% |
 | `drafting-service` | 12% | ✅ Groq drafting + citation validation + API + tests + Docker, verified end-to-end incl. full cross-service chain | `[████████████████░░░░]` 80% |
-| `gateway` | 12% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
+| `gateway` | 12% | ✅ Orchestration + 3 real cross-service bugs found & fixed + tests + Docker, verified end-to-end | `[███████████████░░░░░]` 80% |
 | `frontend` | 8% | ⬜ Contract documented, no code | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
 | Integration + demo polish | 5% | ⬜ Not started | `[░░░░░░░░░░░░░░░░░░░░]` 0% |
 
@@ -300,14 +300,89 @@ Not yet done: persisting drafts to the `drafted_rfi` table (currently
 stateless request/response, no `DATABASE_URL`) and the `approved` boolean
 workflow that table already has a column for.
 
+### `gateway` (2026-07-21)
+
+Sixth service implemented -- orchestrates the other five behind one HTTP
+surface (`POST /review/submittal`), per the order in this service's own
+README: extraction -> compliance -> (if FAIL/CONFLICT) schedule + retrieval
+in parallel -> drafting. Contains no domain logic of its own; the real
+design decision is REQUIRED vs BEST-EFFORT -- extraction and compliance
+failures abort the whole request (`GatewayError`, 502/503), but
+schedule/retrieval/drafting failures degrade gracefully (null/empty field +
+a `pipeline_warnings` entry) since a compliance verdict is still useful on
+its own even if, say, drafting-service is down.
+
+Filled a second dataset gap on the way: 7 of the 12 equipment items had no
+raw submittal text (`raw_submittal_file: null`), which blocks the gateway's
+own stated test plan ("all 12 equipment items ... against a docker-compose
+stack of all six services"). Added realistic `.txt` submittals for
+XFMR-02, SWGR-LV-01, GEN-01, GEN-02, CRAC-02, PDU-01, and ATS-01, matching
+the values already fixed in the gold set, so the full-pipeline test is
+genuine across the entire dataset, not five of twelve items.
+
+**Three real cross-service integration bugs, found only because this
+service actually chains the other five together instead of testing each in
+isolation** (see `app/spec_filter.py`'s docstring for the full detail):
+
+1. *Coverage mismatch*: extraction-service pulls every spec value off a
+   datasheet (17 for XFMR-01); compliance-service 404s on the first
+   attribute name it doesn't track for that equipment. Fixed by filtering
+   to only checkable attributes before forwarding, using the same
+   `equipment_master.json` both services already read -- not a third
+   hand-typed vocabulary.
+2. *Unit label mismatch*: compliance-service's engine refuses to compare
+   values whose unit string doesn't match the spec's exactly (`"kW"` vs
+   `"kW standby"` 502'd the real GEN-01/GEN-02 pipeline on first live run,
+   caught by the live test, not a mock). Fixed by substituting the
+   canonical spec unit before forwarding.
+3. *ENUM split mismatch*: extraction-service's `units.py` correctly splits
+   `"7.0%"` into `value=7.0, unit="%"` for RANGE attributes, but the same
+   logic also splits `"480V"` into `value=480, unit="V"` for the ENUM-
+   checked `input_voltage` attribute, which then fails an exact string
+   match against `"480V"` (real bug: PDU-01 came back FAIL against a PASS
+   gold label). Fixed by recombining value+unit for attributes
+   `equipment_master.json`'s own shape identifies as ENUM (no
+   `acceptable_range_low`/`high`), not by changing either service's
+   already-tested internal logic.
+
+A fourth issue was a dataset-authoring mistake, not a service bug: the
+synthetic GEN-02 submittal text I wrote referenced GEN-01's and the spec
+minimum's kW values in the same sentence as GEN-02's own rating, and the
+LLM (reasonably) extracted all three as three readings of the same
+attribute, dragging a real PASS to FAIL via an unrelated number. Fixed the
+source text, and separately hardened `spec_filter.py` to keep only the
+highest-confidence entry whenever extraction returns more than one value
+for the same attribute name -- a real submittal could plausibly have this
+ambiguity even with cleaner prose.
+
+Also fixed weak precedent retrieval: compliance-service's rationale text is
+deliberately generic ("Submitted 7.0 is outside acceptable range [5.32,
+6.18]."), with no domain words in it -- on first live run this alone pulled
+RFI-HIST-001 (a UPS breaker RFI) for a transformer-impedance deviation
+instead of the actually-relevant RFI-HIST-003. Fixed by prepending the
+equipment's description and attribute name to the retrieval query, both
+already available without another service call.
+
+Test suite: 48 pytest nodes -- 24 in `test_orchestrator.py` (mocked via
+`httpx.MockTransport`, covering every REQUIRED-vs-BEST-EFFORT failure mode
+per service, the coverage/unit/ENUM/dedup fixes above, PASS/FAIL/CONFLICT
+branching, and the `requires_human_approval` invariant), 7 in `test_api.py`
+(request validation), and 17 in `test_live_full_pipeline.py` -- the
+README's own stated test plan: all 12 equipment items run through the real
+6-service Docker Compose stack, checked against `equipment_master.json`'s
+gold verdict, plus dedicated checks for both hero scenarios (XFMR-01
+CRITICAL, SWGR-MV-01 FLAGGED) and the ATS-01 CONFLICT case. All 48 pass
+against the fully containerized stack, not just a local dev run.
+
 ### What's left
 
-`gateway` (orchestrate all five real services behind one HTTP surface) and
-`frontend` (the only thing currently making this invisible to anyone who
-isn't hitting the APIs directly) are the two remaining 0% rows, plus final
-integration/demo polish. Every service that touches an LLM or a vector
-search has now been proven against the real dataset over real HTTP, not
-simulated -- what's left is orchestration and a UI, not further de-risking.
+`frontend` is the only remaining 0% row -- the one thing currently making
+this invisible to anyone not hitting the APIs directly. Every service that
+touches an LLM, a vector search, or now cross-service orchestration has
+been proven against the real dataset over real HTTP, not simulated -- three
+genuine integration bugs were found and fixed specifically because the
+gateway's live test chains real services together instead of testing each
+in isolation. What's left is a UI, not further de-risking.
 
 ### `schedule-service` (2026-07-17)
 
