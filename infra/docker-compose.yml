@@ -101,12 +101,17 @@ services:
     # No DB dependency -- this service is stateless, takes already-decided
     # facts as input (compliance/schedule/precedent) and returns a draft.
   #
-  # frontend:
-  #   build: ../frontend
-  #   ports: ["3000:3000"]
-  #   environment:
-  #     - NEXT_PUBLIC_GATEWAY_URL=http://localhost:8000
-  #   depends_on: [gateway]
+  frontend:
+    build:
+      context: ../frontend
+      args:
+        # Browser JS calls the gateway directly at whatever URL the user's
+        # own browser can reach -- localhost:8000 (gateway's published port),
+        # not the container-network name "gateway" that server-side code in
+        # this compose file uses for the other services.
+        NEXT_PUBLIC_GATEWAY_URL: http://localhost:8000
+    ports: ["3000:3000"]
+    depends_on: [gateway]
 
 volumes:
   meridian_pg_data:

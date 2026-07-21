@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+:root {
+  /* Warm graphite base -- deliberately not the near-universal blue-tinted
+     "AI product" dark theme. Everything here has a slight warm undertone
+     instead of a cool blue-grey one. */
+  --bg: #131315;
+  --bg-raised: #1b1b1e;
+  --bg-raised-hover: #212124;
+  --bg-inset: #0e0e10;
+  --border: #2a2a2e;
+  --border-subtle: #212124;
+
+  --text: #eeeeef;
+  --text-secondary: #a3a3a8;
+  --text-muted: #6c6c72;
+
+  /* Brand / interactive accent: copper, not blue. */
+  --accent: #e0923c;
+  --accent-strong: #f0a750;
+  --accent-soft: rgba(224, 146, 60, 0.14);
+  --accent-border: rgba(224, 146, 60, 0.35);
+
+  /* Status colors -- four distinct hues, each meaning exactly one thing.
+     CONFLICT is deliberately not a shade of red: a spec contradicting
+     itself is a different kind of problem than a vendor's mistake, and
+     should never look like the same alert (see gateway/frontend READMEs). */
+  --pass: #3ecf8e;
+  --pass-soft: rgba(62, 207, 142, 0.14);
+  --pass-border: rgba(62, 207, 142, 0.32);
+
+  --fail: #e5484d;
+  --fail-soft: rgba(229, 72, 77, 0.14);
+  --fail-border: rgba(229, 72, 77, 0.32);
+
+  --conflict: #b98ce8;
+  --conflict-soft: rgba(185, 140, 232, 0.14);
+  --conflict-border: rgba(185, 140, 232, 0.32);
+
+  --flagged: var(--accent);
+  --flagged-soft: var(--accent-soft);
+  --flagged-border: var(--accent-border);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-raised: var(--bg-raised);
+  --color-bg-raised-hover: var(--bg-raised-hover);
+  --color-bg-inset: var(--bg-inset);
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-border: var(--accent-border);
+
+  --color-pass: var(--pass);
+  --color-pass-soft: var(--pass-soft);
+  --color-pass-border: var(--pass-border);
+
+  --color-fail: var(--fail);
+  --color-fail-soft: var(--fail-soft);
+  --color-fail-border: var(--fail-border);
+
+  --color-conflict: var(--conflict);
+  --color-conflict-soft: var(--conflict-soft);
+  --color-conflict-border: var(--conflict-border);
+
+  --color-flagged: var(--flagged);
+  --color-flagged-soft: var(--flagged-soft);
+  --color-flagged-border: var(--flagged-border);
+
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+/* Subtle scrollbar matching the theme instead of the browser default */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.animate-pulse-dot {
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fade-up 0.35s ease-out both;
+}
